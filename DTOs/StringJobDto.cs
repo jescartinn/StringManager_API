@@ -2,7 +2,7 @@ namespace StringManager_API.DTOs;
 
 public class StringJobDto
 {
-    public int StringJobId { get; set; }
+    public int Id { get; set; }
     public int PlayerId { get; set; }
     public PlayerDto? Player { get; set; }
     

@@ -2,7 +2,7 @@ namespace StringManager_API.Models;
 
 public class Racquet
 {
-    public int RacquetId { get; set; }
+    public int Id { get; set; }
     public int PlayerId { get; set; }
     public Player? Player { get; set; }
     public string Brand { get; set; } = string.Empty;

@@ -8,7 +8,7 @@ GO
 
 -- Crear tabla de Jugadores
 CREATE TABLE Players (
-    PlayerId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(100) NOT NULL,
     LastName NVARCHAR(100) NOT NULL,
     CountryCode NVARCHAR(3) NULL
@@ -17,7 +17,7 @@ GO
 
 -- Crear tabla de Raquetas
 CREATE TABLE Racquets (
-    RacquetId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     PlayerId INT NOT NULL,
     Brand NVARCHAR(100) NOT NULL,
     Model NVARCHAR(100) NOT NULL,
@@ -25,13 +25,13 @@ CREATE TABLE Racquets (
     HeadSize FLOAT NULL,
     Notes NVARCHAR(500) NULL,
     CONSTRAINT FK_Racquets_Players FOREIGN KEY (PlayerId) 
-        REFERENCES Players (PlayerId) ON DELETE NO ACTION
+        REFERENCES Players (Id) ON DELETE NO ACTION
 );
 GO
 
 -- Crear tabla de Tipos de Cuerdas
 CREATE TABLE StringTypes (
-    StringTypeId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     Brand NVARCHAR(100) NOT NULL,
     Model NVARCHAR(100) NOT NULL,
     Gauge NVARCHAR(20) NULL,
@@ -42,7 +42,7 @@ GO
 
 -- Crear tabla de Encordadores
 CREATE TABLE Stringers (
-    StringerId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(100) NOT NULL,
     LastName NVARCHAR(100) NOT NULL,
     Email NVARCHAR(150) NULL,
@@ -52,7 +52,7 @@ GO
 
 -- Crear tabla de Torneos
 CREATE TABLE Tournaments (
-    TournamentId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(200) NOT NULL,
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
@@ -63,7 +63,7 @@ GO
 
 -- Crear tabla de Trabajos de Encordado
 CREATE TABLE StringJobs (
-    StringJobId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     PlayerId INT NOT NULL,
     RacquetId INT NOT NULL,
     MainStringId INT NULL,
@@ -79,17 +79,17 @@ CREATE TABLE StringJobs (
     Notes NVARCHAR(1000) NULL,
     Priority INT NULL,
     CONSTRAINT FK_StringJobs_Players FOREIGN KEY (PlayerId) 
-        REFERENCES Players (PlayerId) ON DELETE NO ACTION,
+        REFERENCES Players (Id) ON DELETE NO ACTION,
     CONSTRAINT FK_StringJobs_Racquets FOREIGN KEY (RacquetId) 
-        REFERENCES Racquets (RacquetId) ON DELETE NO ACTION,
+        REFERENCES Racquets (Id) ON DELETE NO ACTION,
     CONSTRAINT FK_StringJobs_MainString FOREIGN KEY (MainStringId) 
-        REFERENCES StringTypes (StringTypeId) ON DELETE NO ACTION,
+        REFERENCES StringTypes (Id) ON DELETE NO ACTION,
     CONSTRAINT FK_StringJobs_CrossString FOREIGN KEY (CrossStringId) 
-        REFERENCES StringTypes (StringTypeId) ON DELETE NO ACTION,
+        REFERENCES StringTypes (Id) ON DELETE NO ACTION,
     CONSTRAINT FK_StringJobs_Stringers FOREIGN KEY (StringerId) 
-        REFERENCES Stringers (StringerId) ON DELETE NO ACTION,
+        REFERENCES Stringers (Id) ON DELETE NO ACTION,
     CONSTRAINT FK_StringJobs_Tournaments FOREIGN KEY (TournamentId) 
-        REFERENCES Tournaments (TournamentId) ON DELETE NO ACTION
+        REFERENCES Tournaments (Id) ON DELETE NO ACTION
 );
 GO
 

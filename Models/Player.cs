@@ -2,7 +2,7 @@ namespace StringManager_API.Models;
 
 public class Player
 {
-    public int PlayerId { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? CountryCode { get; set; }
