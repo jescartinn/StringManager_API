@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using StringManager_API.Data;
 using StringManager_API.DTOs;
-using StringManager_API.Models;
+using StringManager_API.Services;
 
 namespace StringManager_API.Controllers;
 
@@ -10,108 +8,52 @@ namespace StringManager_API.Controllers;
 [Route("api/[controller]")]
 public class PlayersController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IPlayerService _playerService;
 
-    public PlayersController(ApplicationDbContext context)
+    public PlayersController(IPlayerService playerService)
     {
-        _context = context;
+        _playerService = playerService;
     }
 
     // GET: api/Players
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers()
     {
-        var players = await _context.Players.ToListAsync();
-
-        var playerDtos = players.Select(p => new PlayerDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            LastName = p.LastName,
-            CountryCode = p.CountryCode
-        }).ToList();
-
-        return Ok(playerDtos);
+        var players = await _playerService.GetAllAsync();
+        return Ok(players);
     }
 
     // GET: api/Players/5
     [HttpGet("{id}")]
     public async Task<ActionResult<PlayerDto>> GetPlayer(int id)
     {
-        var player = await _context.Players.FindAsync(id);
+        var player = await _playerService.GetByIdAsync(id);
 
         if (player == null)
         {
             return NotFound();
         }
 
-        var playerDto = new PlayerDto
-        {
-            Id = player.Id,
-            Name = player.Name,
-            LastName = player.LastName,
-            CountryCode = player.CountryCode
-        };
-
-        return Ok(playerDto);
+        return Ok(player);
     }
 
     // POST: api/Players
     [HttpPost]
     public async Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto createPlayerDto)
     {
-        var player = new Player
-        {
-            Name = createPlayerDto.Name,
-            LastName = createPlayerDto.LastName,
-            CountryCode = createPlayerDto.CountryCode
-        };
-
-        _context.Players.Add(player);
-        await _context.SaveChangesAsync();
-
-        var playerDto = new PlayerDto
-        {
-            Id = player.Id,
-            Name = player.Name,
-            LastName = player.LastName,
-            CountryCode = player.CountryCode
-        };
-
-        return CreatedAtAction(nameof(GetPlayer), new { id = player.Id }, playerDto);
+        var player = await _playerService.CreateAsync(createPlayerDto);
+        return CreatedAtAction(nameof(GetPlayer), new { id = player.Id }, player);
     }
 
     // PUT: api/Players/5
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePlayer(int id, UpdatePlayerDto updatePlayerDto)
     {
-        var player = await _context.Players.FindAsync(id);
+        var result = await _playerService.UpdateAsync(id, updatePlayerDto);
 
-        if (player == null)
+        if (!result)
         {
             return NotFound();
-        }
-
-        player.Name = updatePlayerDto.Name;
-        player.LastName = updatePlayerDto.LastName;
-        player.CountryCode = updatePlayerDto.CountryCode;
-
-        _context.Entry(player).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!PlayerExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
         }
 
         return NoContent();
@@ -121,29 +63,13 @@ public class PlayersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePlayer(int id)
     {
-        var player = await _context.Players.FindAsync(id);
+        var result = await _playerService.DeleteAsync(id);
 
-        if (player == null)
-        {
-            return NotFound();
-        }
-
-        // Verificar si el jugador tiene trabajos de encordado
-        var hasStringJobs = await _context.StringJobs.AnyAsync(sj => sj.PlayerId == id);
-
-        if (hasStringJobs)
+        if (!result)
         {
             return BadRequest("No se puede eliminar el jugador porque tiene trabajos de encordado asociados.");
         }
 
-        _context.Players.Remove(player);
-        await _context.SaveChangesAsync();
-
         return NoContent();
-    }
-
-    private bool PlayerExists(int id)
-    {
-        return _context.Players.Any(e => e.Id == id);
     }
 }

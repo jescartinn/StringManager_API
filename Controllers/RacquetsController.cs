@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using StringManager_API.Data;
 using StringManager_API.DTOs;
-using StringManager_API.Models;
+using StringManager_API.Services;
 
 namespace StringManager_API.Controllers;
 
@@ -10,164 +8,69 @@ namespace StringManager_API.Controllers;
 [Route("api/[controller]")]
 public class RacquetsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IRacquetService _racquetService;
 
-    public RacquetsController(ApplicationDbContext context)
+    public RacquetsController(IRacquetService racquetService)
     {
-        _context = context;
+        _racquetService = racquetService;
     }
 
     // GET: api/Racquets
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RacquetDto>>> GetRacquets([FromQuery] int? playerId = null)
     {
-        IQueryable<Racquet> query = _context.Racquets.Include(r => r.Player);
+        IEnumerable<RacquetDto> racquets;
 
         if (playerId.HasValue)
         {
-            query = query.Where(r => r.PlayerId == playerId);
+            racquets = await _racquetService.GetByPlayerIdAsync(playerId.Value);
+        }
+        else
+        {
+            racquets = await _racquetService.GetAllAsync();
         }
 
-        var racquets = await query.ToListAsync();
-
-        var racquetDtos = racquets.Select(r => new RacquetDto
-        {
-            Id = r.Id,
-            PlayerId = r.PlayerId,
-            Brand = r.Brand,
-            Model = r.Model,
-            SerialNumber = r.SerialNumber,
-            HeadSize = r.HeadSize,
-            Notes = r.Notes,
-            Player = r.Player != null ? new PlayerDto
-            {
-                Id = r.Player.Id,
-                Name = r.Player.Name,
-                LastName = r.Player.LastName,
-                CountryCode = r.Player.CountryCode
-            } : null
-        }).ToList();
-
-        return Ok(racquetDtos);
+        return Ok(racquets);
     }
 
     // GET: api/Racquets/5
     [HttpGet("{id}")]
     public async Task<ActionResult<RacquetDto>> GetRacquet(int id)
     {
-        var racquet = await _context.Racquets
-            .Include(r => r.Player)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        var racquet = await _racquetService.GetByIdAsync(id);
 
         if (racquet == null)
         {
             return NotFound();
         }
 
-        var racquetDto = new RacquetDto
-        {
-            Id = racquet.Id,
-            PlayerId = racquet.PlayerId,
-            Brand = racquet.Brand,
-            Model = racquet.Model,
-            SerialNumber = racquet.SerialNumber,
-            HeadSize = racquet.HeadSize,
-            Notes = racquet.Notes,
-            Player = racquet.Player != null ? new PlayerDto
-            {
-                Id = racquet.Player.Id,
-                Name = racquet.Player.Name,
-                LastName = racquet.Player.LastName,
-                CountryCode = racquet.Player.CountryCode
-            } : null
-        };
-
-        return Ok(racquetDto);
+        return Ok(racquet);
     }
 
     // POST: api/Racquets
     [HttpPost]
     public async Task<ActionResult<RacquetDto>> CreateRacquet(CreateRacquetDto createRacquetDto)
     {
-        // Verificar si el jugador existe
-        var playerExists = await _context.Players.AnyAsync(p => p.Id == createRacquetDto.PlayerId);
-        if (!playerExists)
+        try
         {
-            return BadRequest("El jugador especificado no existe.");
+            var racquet = await _racquetService.CreateAsync(createRacquetDto);
+            return CreatedAtAction(nameof(GetRacquet), new { id = racquet.Id }, racquet);
         }
-
-        var racquet = new Racquet
+        catch (InvalidOperationException ex)
         {
-            PlayerId = createRacquetDto.PlayerId,
-            Brand = createRacquetDto.Brand,
-            Model = createRacquetDto.Model,
-            SerialNumber = createRacquetDto.SerialNumber,
-            HeadSize = createRacquetDto.HeadSize,
-            Notes = createRacquetDto.Notes
-        };
-
-        _context.Racquets.Add(racquet);
-        await _context.SaveChangesAsync();
-
-        // Cargar el jugador para el DTO de respuesta
-        await _context.Entry(racquet)
-            .Reference(r => r.Player)
-            .LoadAsync();
-
-        var racquetDto = new RacquetDto
-        {
-            Id = racquet.Id,
-            PlayerId = racquet.PlayerId,
-            Brand = racquet.Brand,
-            Model = racquet.Model,
-            SerialNumber = racquet.SerialNumber,
-            HeadSize = racquet.HeadSize,
-            Notes = racquet.Notes,
-            Player = racquet.Player != null ? new PlayerDto
-            {
-                Id = racquet.Player.Id,
-                Name = racquet.Player.Name,
-                LastName = racquet.Player.LastName,
-                CountryCode = racquet.Player.CountryCode
-            } : null
-        };
-
-        return CreatedAtAction(nameof(GetRacquet), new { id = racquet.Id }, racquetDto);
+            return BadRequest(ex.Message);
+        }
     }
 
     // PUT: api/Racquets/5
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRacquet(int id, UpdateRacquetDto updateRacquetDto)
     {
-        var racquet = await _context.Racquets.FindAsync(id);
+        var result = await _racquetService.UpdateAsync(id, updateRacquetDto);
 
-        if (racquet == null)
+        if (!result)
         {
             return NotFound();
-        }
-
-        racquet.Brand = updateRacquetDto.Brand;
-        racquet.Model = updateRacquetDto.Model;
-        racquet.SerialNumber = updateRacquetDto.SerialNumber;
-        racquet.HeadSize = updateRacquetDto.HeadSize;
-        racquet.Notes = updateRacquetDto.Notes;
-
-        _context.Entry(racquet).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!RacquetExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
         }
 
         return NoContent();
@@ -177,29 +80,13 @@ public class RacquetsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRacquet(int id)
     {
-        var racquet = await _context.Racquets.FindAsync(id);
+        var result = await _racquetService.DeleteAsync(id);
 
-        if (racquet == null)
-        {
-            return NotFound();
-        }
-
-        // Verificar si la raqueta tiene trabajos de encordado
-        var hasStringJobs = await _context.StringJobs.AnyAsync(sj => sj.RacquetId == id);
-
-        if (hasStringJobs)
+        if (!result)
         {
             return BadRequest("No se puede eliminar la raqueta porque tiene trabajos de encordado asociados.");
         }
 
-        _context.Racquets.Remove(racquet);
-        await _context.SaveChangesAsync();
-
         return NoContent();
-    }
-
-    private bool RacquetExists(int id)
-    {
-        return _context.Racquets.Any(e => e.Id == id);
     }
 }
