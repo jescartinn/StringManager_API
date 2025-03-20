@@ -71,5 +71,9 @@ public class ApplicationDbContext : DbContext
             .WithMany(t => t.StringJobs)
             .HasForeignKey(sj => sj.TournamentId)
             .OnDelete(DeleteBehavior.Restrict);
+            
+        // Configuración para evitar columnas de navegación inversa
+        modelBuilder.Entity<StringType>()
+            .Ignore(st => st.StringJobs);
     }
 }
