@@ -2,7 +2,7 @@ namespace StringManager_API.Models;
 
 public class StringJob
 {
-    public int Id { get; set; }
+    public int StringJobId { get; set; }
     
     public int PlayerId { get; set; }
     public Player? Player { get; set; }

@@ -2,7 +2,7 @@ namespace StringManager_API.DTOs;
 
 public class StringTypeDto
 {
-    public int Id { get; set; }
+    public int StringTypeId { get; set; }
     public string Brand { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
     public string? Gauge { get; set; }
