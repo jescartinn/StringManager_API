@@ -16,7 +16,7 @@ public class StringJobService : IStringJobService
 
     public async Task<IEnumerable<StringJobDto>> GetAllAsync()
     {
-        var stringJobs = await _context.StringJobs
+        return await _context.StringJobs
             .Include(sj => sj.Player)
             .Include(sj => sj.Racquet)
             .Include(sj => sj.MainString)
@@ -25,43 +25,245 @@ public class StringJobService : IStringJobService
             .Include(sj => sj.Tournament)
             .OrderByDescending(sj => sj.Priority)
             .ThenByDescending(sj => sj.CreatedAt)
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority
+            })
             .ToListAsync();
-
-        return stringJobs.Select(sj => MapToStringJobDto(sj));
     }
 
     public async Task<StringJobDto?> GetByIdAsync(int id)
     {
-        var stringJob = await _context.StringJobs
+        return await _context.StringJobs
+            .Where(sj => sj.Id == id)
             .Include(sj => sj.Player)
             .Include(sj => sj.Racquet)
             .Include(sj => sj.MainString)
             .Include(sj => sj.CrossString)
             .Include(sj => sj.Stringer)
             .Include(sj => sj.Tournament)
-            .FirstOrDefaultAsync(sj => sj.Id == id);
-
-        if (stringJob == null)
-            return null;
-
-        return MapToStringJobDto(stringJob);
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<StringJobDto>> GetByStatusAsync(string status)
     {
-        var stringJobs = await _context.StringJobs
+        return await _context.StringJobs
+            .Where(sj => sj.Status == status)
             .Include(sj => sj.Player)
             .Include(sj => sj.Racquet)
             .Include(sj => sj.MainString)
             .Include(sj => sj.CrossString)
             .Include(sj => sj.Stringer)
             .Include(sj => sj.Tournament)
-            .Where(sj => sj.Status == status)
             .OrderByDescending(sj => sj.Priority)
             .ThenByDescending(sj => sj.CreatedAt)
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority
+            })
             .ToListAsync();
-
-        return stringJobs.Select(sj => MapToStringJobDto(sj));
     }
 
     public async Task<IEnumerable<StringJobDto>> GetByTournamentIdAsync(int tournamentId)
@@ -71,19 +273,87 @@ public class StringJobService : IStringJobService
         if (!tournamentExists)
             return Enumerable.Empty<StringJobDto>();
 
-        var stringJobs = await _context.StringJobs
+        return await _context.StringJobs
+            .Where(sj => sj.TournamentId == tournamentId)
             .Include(sj => sj.Player)
             .Include(sj => sj.Racquet)
             .Include(sj => sj.MainString)
             .Include(sj => sj.CrossString)
             .Include(sj => sj.Stringer)
             .Include(sj => sj.Tournament)
-            .Where(sj => sj.TournamentId == tournamentId)
             .OrderByDescending(sj => sj.Priority)
             .ThenByDescending(sj => sj.CreatedAt)
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority
+            })
             .ToListAsync();
-
-        return stringJobs.Select(sj => MapToStringJobDto(sj));
     }
 
     public async Task<IEnumerable<StringJobDto>> GetByPlayerIdAsync(int playerId)
@@ -93,18 +363,86 @@ public class StringJobService : IStringJobService
         if (!playerExists)
             return Enumerable.Empty<StringJobDto>();
 
-        var stringJobs = await _context.StringJobs
+        return await _context.StringJobs
+            .Where(sj => sj.PlayerId == playerId)
             .Include(sj => sj.Player)
             .Include(sj => sj.Racquet)
             .Include(sj => sj.MainString)
             .Include(sj => sj.CrossString)
             .Include(sj => sj.Stringer)
             .Include(sj => sj.Tournament)
-            .Where(sj => sj.PlayerId == playerId)
             .OrderByDescending(sj => sj.CreatedAt)
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority
+            })
             .ToListAsync();
-
-        return stringJobs.Select(sj => MapToStringJobDto(sj));
     }
 
     public async Task<IEnumerable<StringJobDto>> GetByStringerIdAsync(int stringerId)
@@ -114,18 +452,86 @@ public class StringJobService : IStringJobService
         if (!stringerExists)
             return Enumerable.Empty<StringJobDto>();
 
-        var stringJobs = await _context.StringJobs
+        return await _context.StringJobs
+            .Where(sj => sj.StringerId == stringerId)
             .Include(sj => sj.Player)
             .Include(sj => sj.Racquet)
             .Include(sj => sj.MainString)
             .Include(sj => sj.CrossString)
             .Include(sj => sj.Stringer)
             .Include(sj => sj.Tournament)
-            .Where(sj => sj.StringerId == stringerId)
             .OrderByDescending(sj => sj.CreatedAt)
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority
+            })
             .ToListAsync();
-
-        return stringJobs.Select(sj => MapToStringJobDto(sj));
     }
 
     public async Task<StringJobDto> CreateAsync(CreateStringJobDto createDto)
@@ -138,7 +544,7 @@ public class StringJobService : IStringJobService
         var racquet = await _context.Racquets.FindAsync(createDto.RacquetId);
         if (racquet == null)
             throw new InvalidOperationException("La raqueta especificada no existe.");
-            
+
         if (racquet.PlayerId != createDto.PlayerId)
             throw new InvalidOperationException("La raqueta especificada no pertenece al jugador indicado.");
 
@@ -190,16 +596,13 @@ public class StringJobService : IStringJobService
         _context.StringJobs.Add(stringJob);
         await _context.SaveChangesAsync();
 
-        // Cargar entidades relacionadas
-        await LoadStringJobRelatedEntitiesAsync(stringJob);
-
-        return MapToStringJobDto(stringJob);
+        return await GetByIdAsync(stringJob.Id);
     }
 
     public async Task<bool> UpdateAsync(int id, UpdateStringJobDto updateDto)
     {
         var stringJob = await _context.StringJobs.FindAsync(id);
-        
+
         if (stringJob == null)
             return false;
 
@@ -213,7 +616,7 @@ public class StringJobService : IStringJobService
             var mainStringExists = await _context.StringTypes.AnyAsync(st => st.Id == updateDto.MainStringId);
             if (!mainStringExists)
                 return false;
-                
+
             stringJob.MainStringId = updateDto.MainStringId;
         }
 
@@ -222,7 +625,7 @@ public class StringJobService : IStringJobService
             var crossStringExists = await _context.StringTypes.AnyAsync(st => st.Id == updateDto.CrossStringId);
             if (!crossStringExists)
                 return false;
-                
+
             stringJob.CrossStringId = updateDto.CrossStringId;
         }
 
@@ -232,7 +635,7 @@ public class StringJobService : IStringJobService
             var stringerExists = await _context.Stringers.AnyAsync(s => s.Id == updateDto.StringerId);
             if (!stringerExists)
                 return false;
-                
+
             stringJob.StringerId = updateDto.StringerId;
         }
 
@@ -262,7 +665,7 @@ public class StringJobService : IStringJobService
     public async Task<bool> DeleteAsync(int id)
     {
         var stringJob = await _context.StringJobs.FindAsync(id);
-        
+
         if (stringJob == null)
             return false;
 
@@ -279,20 +682,20 @@ public class StringJobService : IStringJobService
     public async Task<bool> CompleteJobAsync(int id, CompleteStringJobDto completeDto)
     {
         var stringJob = await _context.StringJobs.FindAsync(id);
-        
+
         if (stringJob == null)
             return false;
 
         // Verificar si el trabajo ya está completado o cancelado
         if (stringJob.Status == "Completed")
             return false;
-            
+
         if (stringJob.Status == "Cancelled")
             return false;
 
         stringJob.Status = "Completed";
         stringJob.CompletedAt = completeDto.CompletedAt;
-        
+
         if (!string.IsNullOrEmpty(completeDto.Notes))
         {
             stringJob.Notes = (string.IsNullOrEmpty(stringJob.Notes))
@@ -319,19 +722,19 @@ public class StringJobService : IStringJobService
     public async Task<bool> CancelJobAsync(int id, string? cancelReason)
     {
         var stringJob = await _context.StringJobs.FindAsync(id);
-        
+
         if (stringJob == null)
             return false;
 
         // Verificar si el trabajo ya está completado o cancelado
         if (stringJob.Status == "Completed")
             return false;
-            
+
         if (stringJob.Status == "Cancelled")
             return false;
 
         stringJob.Status = "Cancelled";
-        
+
         if (!string.IsNullOrEmpty(cancelReason))
         {
             stringJob.Notes = (string.IsNullOrEmpty(stringJob.Notes))
@@ -358,7 +761,7 @@ public class StringJobService : IStringJobService
     public async Task<bool> StartJobAsync(int id)
     {
         var stringJob = await _context.StringJobs.FindAsync(id);
-        
+
         if (stringJob == null)
             return false;
 
@@ -387,118 +790,5 @@ public class StringJobService : IStringJobService
     private async Task<bool> StringJobExistsAsync(int id)
     {
         return await _context.StringJobs.AnyAsync(e => e.Id == id);
-    }
-
-    private async Task LoadStringJobRelatedEntitiesAsync(StringJob stringJob)
-    {
-        await _context.Entry(stringJob)
-            .Reference(sj => sj.Player)
-            .LoadAsync();
-            
-        await _context.Entry(stringJob)
-            .Reference(sj => sj.Racquet)
-            .LoadAsync();
-            
-        if (stringJob.MainStringId.HasValue)
-        {
-            await _context.Entry(stringJob)
-                .Reference(sj => sj.MainString)
-                .LoadAsync();
-        }
-        
-        if (stringJob.CrossStringId.HasValue)
-        {
-            await _context.Entry(stringJob)
-                .Reference(sj => sj.CrossString)
-                .LoadAsync();
-        }
-        
-        if (stringJob.StringerId.HasValue)
-        {
-            await _context.Entry(stringJob)
-                .Reference(sj => sj.Stringer)
-                .LoadAsync();
-        }
-        
-        if (stringJob.TournamentId.HasValue)
-        {
-            await _context.Entry(stringJob)
-                .Reference(sj => sj.Tournament)
-                .LoadAsync();
-        }
-    }
-
-    private StringJobDto MapToStringJobDto(StringJob stringJob)
-    {
-        return new StringJobDto
-        {
-            Id = stringJob.Id,
-            PlayerId = stringJob.PlayerId,
-            Player = stringJob.Player != null ? new PlayerDto
-            {
-                Id = stringJob.Player.Id,
-                Name = stringJob.Player.Name,
-                LastName = stringJob.Player.LastName,
-                CountryCode = stringJob.Player.CountryCode
-            } : null,
-            RacquetId = stringJob.RacquetId,
-            Racquet = stringJob.Racquet != null ? new RacquetDto
-            {
-                Id = stringJob.Racquet.Id,
-                PlayerId = stringJob.Racquet.PlayerId,
-                Brand = stringJob.Racquet.Brand,
-                Model = stringJob.Racquet.Model,
-                SerialNumber = stringJob.Racquet.SerialNumber,
-                HeadSize = stringJob.Racquet.HeadSize,
-                Notes = stringJob.Racquet.Notes
-            } : null,
-            MainStringId = stringJob.MainStringId,
-            MainString = stringJob.MainString != null ? new StringTypeDto
-            {
-                Id = stringJob.MainString.Id,
-                Brand = stringJob.MainString.Brand,
-                Model = stringJob.MainString.Model,
-                Gauge = stringJob.MainString.Gauge,
-                Material = stringJob.MainString.Material,
-                Color = stringJob.MainString.Color
-            } : null,
-            CrossStringId = stringJob.CrossStringId,
-            CrossString = stringJob.CrossString != null ? new StringTypeDto
-            {
-                Id = stringJob.CrossString.Id,
-                Brand = stringJob.CrossString.Brand,
-                Model = stringJob.CrossString.Model,
-                Gauge = stringJob.CrossString.Gauge,
-                Material = stringJob.CrossString.Material,
-                Color = stringJob.CrossString.Color
-            } : null,
-            StringerId = stringJob.StringerId,
-            Stringer = stringJob.Stringer != null ? new StringerDto
-            {
-                Id = stringJob.Stringer.Id,
-                Name = stringJob.Stringer.Name,
-                LastName = stringJob.Stringer.LastName,
-                Email = stringJob.Stringer.Email,
-                PhoneNumber = stringJob.Stringer.PhoneNumber
-            } : null,
-            TournamentId = stringJob.TournamentId,
-            Tournament = stringJob.Tournament != null ? new TournamentDto
-            {
-                Id = stringJob.Tournament.Id,
-                Name = stringJob.Tournament.Name,
-                StartDate = stringJob.Tournament.StartDate,
-                EndDate = stringJob.Tournament.EndDate,
-                Location = stringJob.Tournament.Location,
-                Category = stringJob.Tournament.Category
-            } : null,
-            CreatedAt = stringJob.CreatedAt,
-            CompletedAt = stringJob.CompletedAt,
-            MainTension = stringJob.MainTension,
-            CrossTension = stringJob.CrossTension,
-            IsTensionInKg = stringJob.IsTensionInKg,
-            Status = stringJob.Status,
-            Notes = stringJob.Notes,
-            Priority = stringJob.Priority
-        };
     }
 }

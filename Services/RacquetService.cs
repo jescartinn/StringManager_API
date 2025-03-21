@@ -16,81 +16,76 @@ public class RacquetService : IRacquetService
 
     public async Task<IEnumerable<RacquetDto>> GetAllAsync()
     {
-        var racquets = await _context.Racquets
+        return await _context.Racquets
             .Include(r => r.Player)
-            .ToListAsync();
-
-        return racquets.Select(r => new RacquetDto
-        {
-            Id = r.Id,
-            PlayerId = r.PlayerId,
-            Brand = r.Brand,
-            Model = r.Model,
-            SerialNumber = r.SerialNumber,
-            HeadSize = r.HeadSize,
-            Notes = r.Notes,
-            Player = r.Player != null ? new PlayerDto
+            .Select(r => new RacquetDto
             {
-                Id = r.Player.Id,
-                Name = r.Player.Name,
-                LastName = r.Player.LastName,
-                CountryCode = r.Player.CountryCode
-            } : null
-        });
+                Id = r.Id,
+                PlayerId = r.PlayerId,
+                Brand = r.Brand,
+                Model = r.Model,
+                SerialNumber = r.SerialNumber,
+                HeadSize = r.HeadSize,
+                Notes = r.Notes,
+                Player = r.Player != null ? new PlayerDto
+                {
+                    Id = r.Player.Id,
+                    Name = r.Player.Name,
+                    LastName = r.Player.LastName,
+                    CountryCode = r.Player.CountryCode
+                } : null
+            })
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<RacquetDto>> GetByPlayerIdAsync(int playerId)
     {
-        var racquets = await _context.Racquets
+        return await _context.Racquets
             .Include(r => r.Player)
             .Where(r => r.PlayerId == playerId)
-            .ToListAsync();
-
-        return racquets.Select(r => new RacquetDto
-        {
-            Id = r.Id,
-            PlayerId = r.PlayerId,
-            Brand = r.Brand,
-            Model = r.Model,
-            SerialNumber = r.SerialNumber,
-            HeadSize = r.HeadSize,
-            Notes = r.Notes,
-            Player = r.Player != null ? new PlayerDto
+            .Select(r => new RacquetDto
             {
-                Id = r.Player.Id,
-                Name = r.Player.Name,
-                LastName = r.Player.LastName,
-                CountryCode = r.Player.CountryCode
-            } : null
-        });
+                Id = r.Id,
+                PlayerId = r.PlayerId,
+                Brand = r.Brand,
+                Model = r.Model,
+                SerialNumber = r.SerialNumber,
+                HeadSize = r.HeadSize,
+                Notes = r.Notes,
+                Player = r.Player != null ? new PlayerDto
+                {
+                    Id = r.Player.Id,
+                    Name = r.Player.Name,
+                    LastName = r.Player.LastName,
+                    CountryCode = r.Player.CountryCode
+                } : null
+            })
+            .ToListAsync();
     }
 
     public async Task<RacquetDto?> GetByIdAsync(int id)
     {
-        var racquet = await _context.Racquets
+        return await _context.Racquets
             .Include(r => r.Player)
-            .FirstOrDefaultAsync(r => r.Id == id);
-
-        if (racquet == null)
-            return null;
-
-        return new RacquetDto
-        {
-            Id = racquet.Id,
-            PlayerId = racquet.PlayerId,
-            Brand = racquet.Brand,
-            Model = racquet.Model,
-            SerialNumber = racquet.SerialNumber,
-            HeadSize = racquet.HeadSize,
-            Notes = racquet.Notes,
-            Player = racquet.Player != null ? new PlayerDto
+            .Where(r => r.Id == id)
+            .Select(r => new RacquetDto
             {
-                Id = racquet.Player.Id,
-                Name = racquet.Player.Name,
-                LastName = racquet.Player.LastName,
-                CountryCode = racquet.Player.CountryCode
-            } : null
-        };
+                Id = r.Id,
+                PlayerId = r.PlayerId,
+                Brand = r.Brand,
+                Model = r.Model,
+                SerialNumber = r.SerialNumber,
+                HeadSize = r.HeadSize,
+                Notes = r.Notes,
+                Player = r.Player != null ? new PlayerDto
+                {
+                    Id = r.Player.Id,
+                    Name = r.Player.Name,
+                    LastName = r.Player.LastName,
+                    CountryCode = r.Player.CountryCode
+                } : null
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<RacquetDto> CreateAsync(CreateRacquetDto createDto)
@@ -113,10 +108,17 @@ public class RacquetService : IRacquetService
         _context.Racquets.Add(racquet);
         await _context.SaveChangesAsync();
 
-        // Cargar el jugador para el DTO de respuesta
-        await _context.Entry(racquet)
-            .Reference(r => r.Player)
-            .LoadAsync();
+        // Obtener los datos completos del jugador
+        var playerInfo = await _context.Players
+            .Where(p => p.Id == racquet.PlayerId)
+            .Select(p => new PlayerDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                LastName = p.LastName,
+                CountryCode = p.CountryCode
+            })
+            .FirstOrDefaultAsync();
 
         return new RacquetDto
         {
@@ -127,13 +129,7 @@ public class RacquetService : IRacquetService
             SerialNumber = racquet.SerialNumber,
             HeadSize = racquet.HeadSize,
             Notes = racquet.Notes,
-            Player = racquet.Player != null ? new PlayerDto
-            {
-                Id = racquet.Player.Id,
-                Name = racquet.Player.Name,
-                LastName = racquet.Player.LastName,
-                CountryCode = racquet.Player.CountryCode
-            } : null
+            Player = playerInfo
         };
     }
 

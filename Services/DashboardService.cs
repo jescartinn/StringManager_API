@@ -15,73 +15,107 @@ public class DashboardService : IDashboardService
     public async Task<object> GetDashboardStatsAsync()
     {
         var today = DateTime.Now.Date;
+
+        // Obtener torneo actual
         var currentTournament = await _context.Tournaments
             .Where(t => t.StartDate <= today && t.EndDate >= today)
             .OrderBy(t => t.StartDate)
+            .Select(t => new
+            {
+                Id = t.Id,
+                Name = t.Name,
+                EndDate = t.EndDate
+            })
             .FirstOrDefaultAsync();
 
-        int totalPendingJobs = await _context.StringJobs
-            .Where(sj => sj.Status == "Pending")
-            .CountAsync();
-
-        int totalInProgressJobs = await _context.StringJobs
-            .Where(sj => sj.Status == "InProgress")
-            .CountAsync();
-
-        int totalCompletedJobsToday = await _context.StringJobs
-            .Where(sj => sj.Status == "Completed" &&
-                  sj.CompletedAt.HasValue &&
-                  sj.CompletedAt.Value.Date == today)
-            .CountAsync();
-
-        int highPriorityJobs = await _context.StringJobs
-            .Where(sj => (sj.Status == "Pending" || sj.Status == "InProgress") &&
-                  sj.Priority == 1)
-            .CountAsync();
-
-        var topStringers = await _context.StringJobs
-            .Where(sj => sj.Status == "Completed" &&
-                  sj.CompletedAt.HasValue &&
-                  sj.StringerId.HasValue)
-            .GroupBy(sj => sj.StringerId)
+        // Estadísticas de trabajos
+        var jobStats = await _context.StringJobs
+            .GroupBy(_ => 1)
             .Select(g => new
             {
-                StringerId = g.Key,
-                StringerName = _context.Stringers
-                    .Where(s => s.Id == g.Key)
-                    .Select(s => s.Name + " " + s.LastName)
-                    .FirstOrDefault(),
+                TotalPendingJobs = g.Count(sj => sj.Status == "Pending"),
+                TotalInProgressJobs = g.Count(sj => sj.Status == "InProgress"),
+                TotalCompletedJobsToday = g.Count(sj => sj.Status == "Completed" &&
+                                                sj.CompletedAt.HasValue &&
+                                                sj.CompletedAt.Value.Date == today),
+                HighPriorityJobs = g.Count(sj => (sj.Status == "Pending" || sj.Status == "InProgress") &&
+                                         sj.Priority == 1)
+            })
+            .FirstOrDefaultAsync() ?? new
+            {
+                TotalPendingJobs = 0,
+                TotalInProgressJobs = 0,
+                TotalCompletedJobsToday = 0,
+                HighPriorityJobs = 0
+            };
+
+        // Mejor encordadores usando
+        var topStringers = await _context.StringJobs
+            .Where(sj => sj.Status == "Completed" &&
+                    sj.CompletedAt.HasValue &&
+                    sj.StringerId.HasValue)
+            .Join(
+                _context.Stringers,
+                sj => sj.StringerId,
+                s => s.Id,
+                (sj, s) => new { StringJob = sj, Stringer = s }
+            )
+            .GroupBy(x => new
+            {
+                StringerId = x.Stringer.Id,
+                StringerName = x.Stringer.Name + " " + x.Stringer.LastName
+            })
+            .Select(g => new
+            {
+                StringerId = g.Key.StringerId,
+                StringerName = g.Key.StringerName,
                 CompletedJobs = g.Count()
             })
             .OrderByDescending(x => x.CompletedJobs)
             .Take(5)
             .ToListAsync();
 
+        // Mejores jugadores
         var topPlayers = await _context.StringJobs
-            .GroupBy(sj => sj.PlayerId)
+            .Join(
+                _context.Players,
+                sj => sj.PlayerId,
+                p => p.Id,
+                (sj, p) => new { StringJob = sj, Player = p }
+            )
+            .GroupBy(x => new
+            {
+                PlayerId = x.Player.Id,
+                PlayerName = x.Player.Name + " " + x.Player.LastName
+            })
             .Select(g => new
             {
-                PlayerId = g.Key,
-                PlayerName = _context.Players
-                    .Where(p => p.Id == g.Key)
-                    .Select(p => p.Name + " " + p.LastName)
-                    .FirstOrDefault(),
+                PlayerId = g.Key.PlayerId,
+                PlayerName = g.Key.PlayerName,
                 TotalJobs = g.Count()
             })
             .OrderByDescending(x => x.TotalJobs)
             .Take(5)
             .ToListAsync();
 
+        // Mejores cuerdas
         var topStrings = await _context.StringJobs
             .Where(sj => sj.MainStringId.HasValue)
-            .GroupBy(sj => sj.MainStringId)
+            .Join(
+                _context.StringTypes,
+                sj => sj.MainStringId,
+                st => st.Id,
+                (sj, st) => new { StringJob = sj, StringType = st }
+            )
+            .GroupBy(x => new
+            {
+                StringId = x.StringType.Id,
+                StringName = x.StringType.Brand + " " + x.StringType.Model
+            })
             .Select(g => new
             {
-                StringId = g.Key,
-                StringName = _context.StringTypes
-                    .Where(st => st.Id == g.Key)
-                    .Select(st => st.Brand + " " + st.Model)
-                    .FirstOrDefault(),
+                StringId = g.Key.StringId,
+                StringName = g.Key.StringName,
                 TotalUses = g.Count()
             })
             .OrderByDescending(x => x.TotalUses)
@@ -96,10 +130,10 @@ public class DashboardService : IDashboardService
                 Name = currentTournament.Name,
                 RemainingDays = (currentTournament.EndDate - today).Days
             } : null,
-            PendingJobs = totalPendingJobs,
-            InProgressJobs = totalInProgressJobs,
-            CompletedJobsToday = totalCompletedJobsToday,
-            HighPriorityJobs = highPriorityJobs,
+            PendingJobs = jobStats.TotalPendingJobs,
+            InProgressJobs = jobStats.TotalInProgressJobs,
+            CompletedJobsToday = jobStats.TotalCompletedJobsToday,
+            HighPriorityJobs = jobStats.HighPriorityJobs,
             TopStringers = topStringers,
             TopPlayers = topPlayers,
             TopStrings = topStrings
@@ -147,10 +181,13 @@ public class DashboardService : IDashboardService
         // Distribución por marcas de cuerdas principales
         var stringBrandDistribution = await query
             .Where(sj => sj.MainStringId.HasValue)
-            .GroupBy(sj => _context.StringTypes
-                .Where(st => st.Id == sj.MainStringId)
-                .Select(st => st.Brand)
-                .FirstOrDefault())
+            .Join(
+                _context.StringTypes,
+                sj => sj.MainStringId,
+                st => st.Id,
+                (sj, st) => new { StringJob = sj, StringType = st }
+            )
+            .GroupBy(x => x.StringType.Brand)
             .Select(g => new
             {
                 Brand = g.Key,
