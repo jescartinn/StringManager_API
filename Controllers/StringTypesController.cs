@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StringManager_API.Authorization;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
 
@@ -6,6 +8,7 @@ namespace StringManager_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class StringTypesController : ControllerBase
 {
     private readonly IStringTypeService _stringTypeService;
@@ -39,6 +42,7 @@ public class StringTypesController : ControllerBase
 
     // POST: api/StringTypes
     [HttpPost]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<StringTypeDto>> CreateStringType(CreateStringTypeDto createStringTypeDto)
     {
         var stringType = await _stringTypeService.CreateAsync(createStringTypeDto);
@@ -47,6 +51,7 @@ public class StringTypesController : ControllerBase
 
     // PUT: api/StringTypes/5
     [HttpPut("{id}")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdateStringType(int id, UpdateStringTypeDto updateStringTypeDto)
     {
         var result = await _stringTypeService.UpdateAsync(id, updateStringTypeDto);
@@ -61,6 +66,7 @@ public class StringTypesController : ControllerBase
 
     // DELETE: api/StringTypes/5
     [HttpDelete("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteStringType(int id)
     {
         var result = await _stringTypeService.DeleteAsync(id);

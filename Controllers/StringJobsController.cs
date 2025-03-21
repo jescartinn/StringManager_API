@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StringManager_API.Authorization;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
 
@@ -6,6 +8,7 @@ namespace StringManager_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class StringJobsController : ControllerBase
 {
     private readonly IStringJobService _stringJobService;
@@ -83,6 +86,7 @@ public class StringJobsController : ControllerBase
 
     // POST: api/StringJobs
     [HttpPost]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<StringJobDto>> CreateStringJob(CreateStringJobDto createStringJobDto)
     {
         try
@@ -98,6 +102,7 @@ public class StringJobsController : ControllerBase
 
     // PUT: api/StringJobs/5
     [HttpPut("{id}")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdateStringJob(int id, UpdateStringJobDto updateStringJobDto)
     {
         var result = await _stringJobService.UpdateAsync(id, updateStringJobDto);
@@ -112,6 +117,7 @@ public class StringJobsController : ControllerBase
 
     // PATCH: api/StringJobs/5/complete
     [HttpPatch("{id}/complete")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> CompleteStringJob(int id, CompleteStringJobDto completeStringJobDto)
     {
         var result = await _stringJobService.CompleteJobAsync(id, completeStringJobDto);
@@ -126,6 +132,7 @@ public class StringJobsController : ControllerBase
 
     // PATCH: api/StringJobs/5/cancel
     [HttpPatch("{id}/cancel")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> CancelStringJob(int id, [FromBody] string? cancelReason)
     {
         var result = await _stringJobService.CancelJobAsync(id, cancelReason);
@@ -140,6 +147,7 @@ public class StringJobsController : ControllerBase
 
     // PATCH: api/StringJobs/5/start
     [HttpPatch("{id}/start")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> StartStringJob(int id)
     {
         var result = await _stringJobService.StartJobAsync(id);
@@ -154,6 +162,7 @@ public class StringJobsController : ControllerBase
 
     // DELETE: api/StringJobs/5
     [HttpDelete("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteStringJob(int id)
     {
         var result = await _stringJobService.DeleteAsync(id);

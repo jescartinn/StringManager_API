@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StringManager_API.Authorization;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
 
@@ -6,6 +8,7 @@ namespace StringManager_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class RacquetsController : ControllerBase
 {
     private readonly IRacquetService _racquetService;
@@ -49,6 +52,7 @@ public class RacquetsController : ControllerBase
 
     // POST: api/Racquets
     [HttpPost]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<RacquetDto>> CreateRacquet(CreateRacquetDto createRacquetDto)
     {
         try
@@ -64,6 +68,7 @@ public class RacquetsController : ControllerBase
 
     // PUT: api/Racquets/5
     [HttpPut("{id}")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdateRacquet(int id, UpdateRacquetDto updateRacquetDto)
     {
         var result = await _racquetService.UpdateAsync(id, updateRacquetDto);
@@ -78,6 +83,7 @@ public class RacquetsController : ControllerBase
 
     // DELETE: api/Racquets/5
     [HttpDelete("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteRacquet(int id)
     {
         var result = await _racquetService.DeleteAsync(id);

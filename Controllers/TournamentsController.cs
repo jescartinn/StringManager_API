@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StringManager_API.Authorization;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
 
@@ -6,6 +8,7 @@ namespace StringManager_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TournamentsController : ControllerBase
 {
     private readonly ITournamentService _tournamentService;
@@ -53,6 +56,7 @@ public class TournamentsController : ControllerBase
 
     // POST: api/Tournaments
     [HttpPost]
+    [AuthorizeRoles("Admin")]
     public async Task<ActionResult<TournamentDto>> CreateTournament(CreateTournamentDto createTournamentDto)
     {
         try
@@ -68,6 +72,7 @@ public class TournamentsController : ControllerBase
 
     // PUT: api/Tournaments/5
     [HttpPut("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> UpdateTournament(int id, UpdateTournamentDto updateTournamentDto)
     {
         try
@@ -89,6 +94,7 @@ public class TournamentsController : ControllerBase
 
     // DELETE: api/Tournaments/5
     [HttpDelete("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteTournament(int id)
     {
         var result = await _tournamentService.DeleteAsync(id);

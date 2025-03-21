@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StringManager_API.Authorization;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
 
@@ -6,6 +8,7 @@ namespace StringManager_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PlayersController : ControllerBase
 {
     private readonly IPlayerService _playerService;
@@ -39,6 +42,7 @@ public class PlayersController : ControllerBase
 
     // POST: api/Players
     [HttpPost]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto createPlayerDto)
     {
         var player = await _playerService.CreateAsync(createPlayerDto);
@@ -47,6 +51,7 @@ public class PlayersController : ControllerBase
 
     // PUT: api/Players/5
     [HttpPut("{id}")]
+    [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdatePlayer(int id, UpdatePlayerDto updatePlayerDto)
     {
         var result = await _playerService.UpdateAsync(id, updatePlayerDto);
@@ -61,6 +66,7 @@ public class PlayersController : ControllerBase
 
     // DELETE: api/Players/5
     [HttpDelete("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeletePlayer(int id)
     {
         var result = await _playerService.DeleteAsync(id);

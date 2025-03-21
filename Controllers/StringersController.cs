@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StringManager_API.Authorization;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
 
@@ -6,6 +8,7 @@ namespace StringManager_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class StringersController : ControllerBase
 {
     private readonly IStringerService _stringerService;
@@ -39,6 +42,7 @@ public class StringersController : ControllerBase
 
     // POST: api/Stringers
     [HttpPost]
+    [AuthorizeRoles("Admin")]
     public async Task<ActionResult<StringerDto>> CreateStringer(CreateStringerDto createStringerDto)
     {
         var stringer = await _stringerService.CreateAsync(createStringerDto);
@@ -47,6 +51,7 @@ public class StringersController : ControllerBase
 
     // PUT: api/Stringers/5
     [HttpPut("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> UpdateStringer(int id, UpdateStringerDto updateStringerDto)
     {
         var result = await _stringerService.UpdateAsync(id, updateStringerDto);
@@ -61,6 +66,7 @@ public class StringersController : ControllerBase
 
     // DELETE: api/Stringers/5
     [HttpDelete("{id}")]
+    [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteStringer(int id)
     {
         var result = await _stringerService.DeleteAsync(id);
