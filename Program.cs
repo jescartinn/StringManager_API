@@ -12,7 +12,13 @@ builder.Services.AddControllers();
 
 // Add JWT configuration
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
+var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
+
+if (jwtSettings == null)
+{
+    throw new InvalidOperationException("JwtSettings section is missing or invalid in configuration.");
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -29,7 +35,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+        ClockSkew = TimeSpan.Zero // Removes the default 5-minute clock skew
     };
 });
 

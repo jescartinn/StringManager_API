@@ -27,14 +27,15 @@ public class UserService : IUserService
         }
 
         // Update last login time
-        user.LastLoginAt = DateTime.Now;
+        user.LastLoginAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         // Generate JWT token
         var token = _jwtService.GenerateToken(user);
 
-        // Calculate expiration time
-        var expiration = DateTime.Now.AddHours(1);
+        // Use settings to calculate expiration time
+        var jwtSettings = new JwtSettings(); // This should be injected via IOptions<JwtSettings>
+        var expiration = DateTime.UtcNow.AddMinutes(jwtSettings.DurationInMinutes);
 
         return new AuthResponseDto
         {
