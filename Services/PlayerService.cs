@@ -16,31 +16,29 @@ public class PlayerService : IPlayerService
 
     public async Task<IEnumerable<PlayerDto>> GetAllAsync()
     {
-        var players = await _context.Players.ToListAsync();
-        
-        return players.Select(p => new PlayerDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            LastName = p.LastName,
-            CountryCode = p.CountryCode
-        });
+        return await _context.Players
+            .Select(p => new PlayerDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                LastName = p.LastName,
+                CountryCode = p.CountryCode
+            })
+            .ToListAsync();
     }
 
     public async Task<PlayerDto?> GetByIdAsync(int id)
     {
-        var player = await _context.Players.FindAsync(id);
-        
-        if (player == null)
-            return null;
-            
-        return new PlayerDto
-        {
-            Id = player.Id,
-            Name = player.Name,
-            LastName = player.LastName,
-            CountryCode = player.CountryCode
-        };
+        return await _context.Players
+            .Where(p => p.Id == id)
+            .Select(p => new PlayerDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                LastName = p.LastName,
+                CountryCode = p.CountryCode
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<PlayerDto> CreateAsync(CreatePlayerDto createDto)
@@ -67,7 +65,7 @@ public class PlayerService : IPlayerService
     public async Task<bool> UpdateAsync(int id, UpdatePlayerDto updateDto)
     {
         var player = await _context.Players.FindAsync(id);
-        
+
         if (player == null)
             return false;
 
@@ -93,18 +91,24 @@ public class PlayerService : IPlayerService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var player = await _context.Players.FindAsync(id);
-        
-        if (player == null)
+        // Verificar la existencia del jugador y sus dependencias
+        var playerWithDependencies = await _context.Players
+            .Where(p => p.Id == id)
+            .Select(p => new
+            {
+                Player = p,
+                HasStringJobs = p.StringJobs.Any()
+            })
+            .FirstOrDefaultAsync();
+
+        if (playerWithDependencies == null)
             return false;
 
         // Verificar si el jugador tiene trabajos de encordado
-        var hasStringJobs = await _context.StringJobs.AnyAsync(sj => sj.PlayerId == id);
-        
-        if (hasStringJobs)
+        if (playerWithDependencies.HasStringJobs)
             return false;
 
-        _context.Players.Remove(player);
+        _context.Players.Remove(playerWithDependencies.Player);
         await _context.SaveChangesAsync();
 
         return true;

@@ -16,58 +16,52 @@ public class TournamentService : ITournamentService
 
     public async Task<IEnumerable<TournamentDto>> GetAllAsync()
     {
-        var tournaments = await _context.Tournaments.ToListAsync();
-
-        return tournaments.Select(t => new TournamentDto
-        {
-            Id = t.Id,
-            Name = t.Name,
-            StartDate = t.StartDate,
-            EndDate = t.EndDate,
-            Location = t.Location,
-            Category = t.Category
-        });
+        return await _context.Tournaments
+            .Select(t => new TournamentDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                StartDate = t.StartDate,
+                EndDate = t.EndDate,
+                Location = t.Location,
+                Category = t.Category
+            })
+            .ToListAsync();
     }
 
     public async Task<TournamentDto?> GetByIdAsync(int id)
     {
-        var tournament = await _context.Tournaments.FindAsync(id);
-
-        if (tournament == null)
-            return null;
-
-        return new TournamentDto
-        {
-            Id = tournament.Id,
-            Name = tournament.Name,
-            StartDate = tournament.StartDate,
-            EndDate = tournament.EndDate,
-            Location = tournament.Location,
-            Category = tournament.Category
-        };
+        return await _context.Tournaments
+            .Where(t => t.Id == id)
+            .Select(t => new TournamentDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                StartDate = t.StartDate,
+                EndDate = t.EndDate,
+                Location = t.Location,
+                Category = t.Category
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<TournamentDto?> GetCurrentTournamentAsync()
     {
         var currentDate = DateTime.Now.Date;
 
-        var tournament = await _context.Tournaments
+        return await _context.Tournaments
             .Where(t => t.StartDate <= currentDate && t.EndDate >= currentDate)
             .OrderBy(t => t.StartDate)
+            .Select(t => new TournamentDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                StartDate = t.StartDate,
+                EndDate = t.EndDate,
+                Location = t.Location,
+                Category = t.Category
+            })
             .FirstOrDefaultAsync();
-
-        if (tournament == null)
-            return null;
-
-        return new TournamentDto
-        {
-            Id = tournament.Id,
-            Name = tournament.Name,
-            StartDate = tournament.StartDate,
-            EndDate = tournament.EndDate,
-            Location = tournament.Location,
-            Category = tournament.Category
-        };
     }
 
     public async Task<TournamentDto> CreateAsync(CreateTournamentDto createDto)
@@ -134,18 +128,24 @@ public class TournamentService : ITournamentService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var tournament = await _context.Tournaments.FindAsync(id);
+        // Verificar la existencia y dependencias
+        var tournamentWithDependencies = await _context.Tournaments
+            .Where(t => t.Id == id)
+            .Select(t => new
+            {
+                Tournament = t,
+                HasStringJobs = _context.StringJobs.Any(sj => sj.TournamentId == id)
+            })
+            .FirstOrDefaultAsync();
 
-        if (tournament == null)
+        if (tournamentWithDependencies == null)
             return false;
 
         // Verificar si el torneo está asociado a algún trabajo de encordado
-        var hasStringJobs = await _context.StringJobs.AnyAsync(sj => sj.TournamentId == id);
-
-        if (hasStringJobs)
+        if (tournamentWithDependencies.HasStringJobs)
             return false;
 
-        _context.Tournaments.Remove(tournament);
+        _context.Tournaments.Remove(tournamentWithDependencies.Tournament);
         await _context.SaveChangesAsync();
 
         return true;

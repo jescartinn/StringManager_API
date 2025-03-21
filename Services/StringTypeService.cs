@@ -16,35 +16,33 @@ public class StringTypeService : IStringTypeService
 
     public async Task<IEnumerable<StringTypeDto>> GetAllAsync()
     {
-        var stringTypes = await _context.StringTypes.ToListAsync();
-
-        return stringTypes.Select(st => new StringTypeDto
-        {
-            Id = st.Id,
-            Brand = st.Brand,
-            Model = st.Model,
-            Gauge = st.Gauge,
-            Material = st.Material,
-            Color = st.Color
-        });
+        return await _context.StringTypes
+            .Select(st => new StringTypeDto
+            {
+                Id = st.Id,
+                Brand = st.Brand,
+                Model = st.Model,
+                Gauge = st.Gauge,
+                Material = st.Material,
+                Color = st.Color
+            })
+            .ToListAsync();
     }
 
     public async Task<StringTypeDto?> GetByIdAsync(int id)
     {
-        var stringType = await _context.StringTypes.FindAsync(id);
-
-        if (stringType == null)
-            return null;
-
-        return new StringTypeDto
-        {
-            Id = stringType.Id,
-            Brand = stringType.Brand,
-            Model = stringType.Model,
-            Gauge = stringType.Gauge,
-            Material = stringType.Material,
-            Color = stringType.Color
-        };
+        return await _context.StringTypes
+            .Where(st => st.Id == id)
+            .Select(st => new StringTypeDto
+            {
+                Id = st.Id,
+                Brand = st.Brand,
+                Model = st.Model,
+                Gauge = st.Gauge,
+                Material = st.Material,
+                Color = st.Color
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<StringTypeDto> CreateAsync(CreateStringTypeDto createDto)
@@ -103,19 +101,25 @@ public class StringTypeService : IStringTypeService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var stringType = await _context.StringTypes.FindAsync(id);
+        // Verificar la existencia y dependencias
+        var stringTypeWithDependencies = await _context.StringTypes
+            .Where(st => st.Id == id)
+            .Select(st => new
+            {
+                StringType = st,
+                IsUsedAsMain = _context.StringJobs.Any(sj => sj.MainStringId == id),
+                IsUsedAsCross = _context.StringJobs.Any(sj => sj.CrossStringId == id)
+            })
+            .FirstOrDefaultAsync();
 
-        if (stringType == null)
+        if (stringTypeWithDependencies == null)
             return false;
 
         // Verificar si el tipo de cuerda se está utilizando en algún trabajo de encordado
-        var isUsedAsMain = await _context.StringJobs.AnyAsync(sj => sj.MainStringId == id);
-        var isUsedAsCross = await _context.StringJobs.AnyAsync(sj => sj.CrossStringId == id);
-
-        if (isUsedAsMain || isUsedAsCross)
+        if (stringTypeWithDependencies.IsUsedAsMain || stringTypeWithDependencies.IsUsedAsCross)
             return false;
 
-        _context.StringTypes.Remove(stringType);
+        _context.StringTypes.Remove(stringTypeWithDependencies.StringType);
         await _context.SaveChangesAsync();
 
         return true;

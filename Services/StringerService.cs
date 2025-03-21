@@ -16,33 +16,31 @@ public class StringerService : IStringerService
 
     public async Task<IEnumerable<StringerDto>> GetAllAsync()
     {
-        var stringers = await _context.Stringers.ToListAsync();
-
-        return stringers.Select(s => new StringerDto
-        {
-            Id = s.Id,
-            Name = s.Name,
-            LastName = s.LastName,
-            Email = s.Email,
-            PhoneNumber = s.PhoneNumber
-        });
+        return await _context.Stringers
+            .Select(s => new StringerDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                LastName = s.LastName,
+                Email = s.Email,
+                PhoneNumber = s.PhoneNumber
+            })
+            .ToListAsync();
     }
 
     public async Task<StringerDto?> GetByIdAsync(int id)
     {
-        var stringer = await _context.Stringers.FindAsync(id);
-
-        if (stringer == null)
-            return null;
-
-        return new StringerDto
-        {
-            Id = stringer.Id,
-            Name = stringer.Name,
-            LastName = stringer.LastName,
-            Email = stringer.Email,
-            PhoneNumber = stringer.PhoneNumber
-        };
+        return await _context.Stringers
+            .Where(s => s.Id == id)
+            .Select(s => new StringerDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                LastName = s.LastName,
+                Email = s.Email,
+                PhoneNumber = s.PhoneNumber
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<StringerDto> CreateAsync(CreateStringerDto createDto)
@@ -98,18 +96,24 @@ public class StringerService : IStringerService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var stringer = await _context.Stringers.FindAsync(id);
+        // Verificar la existencia y dependencias
+        var stringerWithDependencies = await _context.Stringers
+            .Where(s => s.Id == id)
+            .Select(s => new
+            {
+                Stringer = s,
+                HasStringJobs = _context.StringJobs.Any(sj => sj.StringerId == id)
+            })
+            .FirstOrDefaultAsync();
 
-        if (stringer == null)
+        if (stringerWithDependencies == null)
             return false;
 
         // Verificar si el encordador está asignado a algún trabajo de encordado
-        var hasStringJobs = await _context.StringJobs.AnyAsync(sj => sj.StringerId == id);
-
-        if (hasStringJobs)
+        if (stringerWithDependencies.HasStringJobs)
             return false;
 
-        _context.Stringers.Remove(stringer);
+        _context.Stringers.Remove(stringerWithDependencies.Stringer);
         await _context.SaveChangesAsync();
 
         return true;
