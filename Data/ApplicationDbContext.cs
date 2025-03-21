@@ -16,10 +16,20 @@ public class ApplicationDbContext : DbContext
     public DbSet<Stringer> Stringers { get; set; } = null!;
     public DbSet<Tournament> Tournaments { get; set; } = null!;
     public DbSet<StringJob> StringJobs { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Configure User entity
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
 
         // Configurar relaciones y restricciones
 
@@ -71,7 +81,7 @@ public class ApplicationDbContext : DbContext
             .WithMany(t => t.StringJobs)
             .HasForeignKey(sj => sj.TournamentId)
             .OnDelete(DeleteBehavior.Restrict);
-            
+
         // Configuración para evitar columnas de navegación inversa
         modelBuilder.Entity<StringType>()
             .Ignore(st => st.StringJobs);

@@ -6,6 +6,24 @@ GO
 USE StringManagerDb;
 GO
 
+-- Crear tabla de Usuarios
+CREATE TABLE Users (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Username NVARCHAR(50) NOT NULL,
+    Email NVARCHAR(100) NOT NULL,
+    PasswordHash NVARCHAR(100) NOT NULL,
+    Role NVARCHAR(20) NOT NULL DEFAULT 'User',
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    LastLoginAt DATETIME NULL,
+    IsActive BIT NOT NULL DEFAULT 1
+);
+GO
+
+-- Crear índices únicos para usuarios
+CREATE UNIQUE INDEX IX_Users_Username ON Users (Username);
+CREATE UNIQUE INDEX IX_Users_Email ON Users (Email);
+GO
+
 -- Crear tabla de Jugadores
 CREATE TABLE Players (
     Id INT PRIMARY KEY IDENTITY(1,1),
@@ -108,6 +126,14 @@ GO
 
 -- Crear datos de ejemplo para pruebas
 
+-- Insertar usuarios de ejemplo
+INSERT INTO Users (Username, Email, PasswordHash, Role, CreatedAt, IsActive)
+VALUES 
+    ('admin', 'admin@stringmanager.com', '$2a$11$tFQyiuaLLMBooDDbC6dfzOP8nd3JhSkq8k/EUJiX6bcjOGag5WSBu', 'Admin', GETDATE(), 1),
+    ('stringer', 'stringer@stringmanager.com', '$2a$11$EMrMnmQ8/Dpmcrr8foXXMudmKCeicoYBZjdY1ouelnSARvQXxk1cG', 'Stringer', GETDATE(), 1),
+    ('user', 'user@stringmanager.com', '$2a$11$3RrCcxVSnKSYCWAJqFyGfegoogVG0AuUmUfFPVLxaO5OEdKAlES1S', 'User', GETDATE(), 1);
+GO
+
 -- Insertar jugadores de ejemplo
 INSERT INTO Players (Name, LastName, CountryCode)
 VALUES 
@@ -170,4 +196,10 @@ VALUES
 (3, 6, 5, NULL, 3, 1, 25, NULL, 1, 'Pending', 2, DATEADD(HOUR, -1, GETDATE())),
 (4, 7, 3, NULL, 1, 1, 24, NULL, 1, 'Pending', 3, DATEADD(HOUR, -2, GETDATE())),
 (5, 8, 6, NULL, 2, 1, 23, NULL, 1, 'Completed', 2, DATEADD(DAY, -1, GETDATE()));
+GO
+
+-- Imprimir resumen
+PRINT 'Base de datos StringManagerDb creada con éxito.';
+PRINT 'Tablas creadas: Users, Players, Racquets, StringTypes, Stringers, Tournaments, StringJobs';
+PRINT 'Datos de muestra insertados correctamente.';
 GO
