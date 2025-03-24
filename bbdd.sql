@@ -124,8 +124,6 @@ CREATE INDEX IX_StringJobs_CreatedAt ON StringJobs (CreatedAt);
 CREATE INDEX IX_Tournaments_StartDate_EndDate ON Tournaments (StartDate, EndDate);
 GO
 
--- Crear datos de ejemplo para pruebas
-
 -- Insertar usuarios de ejemplo
 INSERT INTO Users (Username, Email, PasswordHash, Role, CreatedAt, IsActive)
 VALUES 
@@ -142,19 +140,6 @@ VALUES
 ('Carlos', 'Alcaraz', 'ESP'),
 ('Iga', 'Swiatek', 'POL'),
 ('Aryna', 'Sabalenka', 'BLR');
-GO
-
--- Insertar raquetas de ejemplo
-INSERT INTO Racquets (PlayerId, Brand, Model, SerialNumber, HeadSize, Notes)
-VALUES 
-(1, 'Babolat', 'Pure Aero Rafa', 'RN2023-001', 100, 'Raqueta principal'),
-(1, 'Babolat', 'Pure Aero Rafa', 'RN2023-002', 100, 'Raqueta de respaldo 1'),
-(1, 'Babolat', 'Pure Aero Rafa', 'RN2023-003', 100, 'Raqueta de respaldo 2'),
-(2, 'Head', 'Speed Pro', 'ND2023-001', 100, 'Raqueta principal'),
-(2, 'Head', 'Speed Pro', 'ND2023-002', 100, 'Raqueta de respaldo'),
-(3, 'Babolat', 'Pure Aero', 'CA2023-001', 100, NULL),
-(4, 'Tecnifibre', 'Tempo', 'IS2023-001', 98, NULL),
-(5, 'Wilson', 'Blade', 'AS2023-001', 98, NULL);
 GO
 
 -- Insertar tipos de cuerdas de ejemplo
@@ -176,30 +161,194 @@ VALUES
 ('Carlos', 'Rodríguez', 'carlos.rodriguez@stringteam.com', '+1234567892');
 GO
 
--- Insertar torneos de ejemplo
-INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+-- Insertar raquetas con seriales dinámicos basados en el año actual
+INSERT INTO Racquets (PlayerId, Brand, Model, SerialNumber, HeadSize, Notes)
 VALUES 
-('Australian Open 2025', '2025-01-13', '2025-01-26', 'Melbourne, Australia', 'Grand Slam'),
-('Roland Garros 2025', '2025-05-19', '2025-06-01', 'Paris, France', 'Grand Slam'),
-('Wimbledon 2025', '2025-06-30', '2025-07-13', 'London, United Kingdom', 'Grand Slam'),
-('US Open 2025', '2025-08-25', '2025-09-07', 'New York, United States', 'Grand Slam'),
-('Madrid Open 2025', '2025-04-28', '2025-05-05', 'Madrid, Spain', 'ATP 1000');
+(1, 'Babolat', 'Pure Aero Rafa', 'RN' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-001', 100, 'Raqueta principal'),
+(1, 'Babolat', 'Pure Aero Rafa', 'RN' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-002', 100, 'Raqueta de respaldo 1'),
+(1, 'Babolat', 'Pure Aero Rafa', 'RN' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-003', 100, 'Raqueta de respaldo 2'),
+(2, 'Head', 'Speed Pro', 'ND' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-001', 100, 'Raqueta principal'),
+(2, 'Head', 'Speed Pro', 'ND' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-002', 100, 'Raqueta de respaldo'),
+(3, 'Babolat', 'Pure Aero', 'CA' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-001', 100, NULL),
+(4, 'Tecnifibre', 'Tempo', 'IS' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-001', 98, NULL),
+(5, 'Wilson', 'Blade', 'AS' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-001', 98, NULL);
 GO
 
--- Insertar trabajos de encordado de ejemplo
+-- Insertar torneos de ejemplo con fechas dinámicas relativas al año actual
+-- Australian Open (mediados de enero)
+INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+VALUES 
+('Australian Open ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
+ DATEFROMPARTS(YEAR(GETDATE()), 1, 13), 
+ DATEFROMPARTS(YEAR(GETDATE()), 1, 26), 
+ 'Melbourne, Australia', 'Grand Slam');
+
+-- Miami Open (finales de marzo)
+INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+VALUES 
+('Miami Open ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
+ DATEFROMPARTS(YEAR(GETDATE()), 3, 17), 
+ DATEFROMPARTS(YEAR(GETDATE()), 3, 30), 
+ 'Miami, United States', 'ATP 1000');
+
+-- Madrid Open (principios de mayo)
+INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+VALUES 
+('Madrid Open ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
+ DATEFROMPARTS(YEAR(GETDATE()), 4, 28), 
+ DATEFROMPARTS(YEAR(GETDATE()), 5, 11), 
+ 'Madrid, Spain', 'ATP 1000');
+
+-- Roland Garros (finales de mayo)
+INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+VALUES 
+('Roland Garros ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
+ DATEFROMPARTS(YEAR(GETDATE()), 5, 25), 
+ DATEFROMPARTS(YEAR(GETDATE()), 6, 8), 
+ 'Paris, France', 'Grand Slam');
+
+-- Wimbledon (principios de julio)
+INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+VALUES 
+('Wimbledon ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
+ DATEFROMPARTS(YEAR(GETDATE()), 6, 30), 
+ DATEFROMPARTS(YEAR(GETDATE()), 7, 13), 
+ 'London, United Kingdom', 'Grand Slam');
+
+-- Torneo actual (que incluye la fecha actual)
+INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
+VALUES 
+('Current Tournament ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
+ DATEADD(DAY, -6, GETDATE()), 
+ DATEADD(DAY, 4, GETDATE()), 
+ 'Current Location, Country', 'ATP 1000');
+GO
+
+-- Crear una tabla temporal para almacenar el ID del torneo actual
+CREATE TABLE #CurrentTournament (Id INT);
+
+-- Insertar el ID del torneo actual en la tabla temporal
+INSERT INTO #CurrentTournament (Id)
+SELECT Id 
+FROM Tournaments 
+WHERE GETDATE() BETWEEN StartDate AND EndDate;
+
+-- Si no hay torneo actual, usar el último torneo
+IF (SELECT COUNT(*) FROM #CurrentTournament) = 0
+BEGIN
+    DELETE FROM #CurrentTournament;
+    INSERT INTO #CurrentTournament (Id)
+    SELECT TOP 1 Id 
+    FROM Tournaments 
+    ORDER BY StartDate DESC;
+END
+
+-- Insertar trabajos de encordado completados en días pasados
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    1, 1, 1, 4, 1, Id, 25, 23, 1, 'Completed', 1, 
+    DATEADD(DAY, -5, GETDATE()), DATEADD(DAY, -5, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    5, 8, 6, NULL, 2, Id, 23, NULL, 1, 'Completed', 2, 
+    DATEADD(DAY, -1, GETDATE()), DATEADD(DAY, -1, GETDATE())
+FROM #CurrentTournament;
+
+-- Insertar trabajos pendientes o en progreso
 INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
                        MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt)
-VALUES 
-(1, 1, 1, 4, 1, 1, 25, 23, 1, 'Completed', 1, DATEADD(DAY, -5, GETDATE())),
-(1, 2, 1, 4, 1, 1, 25, 23, 1, 'Pending', 1, GETDATE()),
-(2, 4, 2, NULL, 2, 1, 24, NULL, 1, 'InProgress', 1, DATEADD(HOUR, -3, GETDATE())),
-(3, 6, 5, NULL, 3, 1, 25, NULL, 1, 'Pending', 2, DATEADD(HOUR, -1, GETDATE())),
-(4, 7, 3, NULL, 1, 1, 24, NULL, 1, 'Pending', 3, DATEADD(HOUR, -2, GETDATE())),
-(5, 8, 6, NULL, 2, 1, 23, NULL, 1, 'Completed', 2, DATEADD(DAY, -1, GETDATE()));
+SELECT 
+    1, 2, 1, 4, 1, Id, 25, 23, 1, 'Pending', 1, GETDATE()
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt)
+SELECT 
+    2, 4, 2, NULL, 2, Id, 24, NULL, 1, 'InProgress', 1, 
+    DATEADD(HOUR, -3, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt)
+SELECT 
+    3, 6, 5, NULL, 3, Id, 25, NULL, 1, 'Pending', 2, 
+    DATEADD(HOUR, -1, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt)
+SELECT 
+    4, 7, 3, NULL, 1, Id, 24, NULL, 1, 'Pending', 3, 
+    DATEADD(HOUR, -2, GETDATE())
+FROM #CurrentTournament;
+
+-- Insertar trabajos de encordado completados hoy (para las estadísticas del dashboard)
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    1, 3, 1, 4, 1, Id, 25, 23, 1, 'Completed', 1, 
+    DATEADD(HOUR, -5, GETDATE()), DATEADD(HOUR, -4, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    2, 5, 2, NULL, 2, Id, 24, NULL, 1, 'Completed', 1, 
+    DATEADD(HOUR, -4, GETDATE()), DATEADD(HOUR, -3, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    3, 6, 5, NULL, 3, Id, 25, NULL, 1, 'Completed', 2, 
+    DATEADD(HOUR, -3, GETDATE()), DATEADD(HOUR, -2, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    4, 7, 3, NULL, 1, Id, 24, NULL, 1, 'Completed', 3, 
+    DATEADD(HOUR, -2, GETDATE()), DATEADD(HOUR, -1, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    5, 8, 6, NULL, 2, Id, 23, NULL, 1, 'Completed', 2, 
+    DATEADD(MINUTE, -90, GETDATE()), DATEADD(MINUTE, -30, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    1, 1, 1, 4, 3, Id, 25, 23, 1, 'Completed', 1, 
+    DATEADD(MINUTE, -75, GETDATE()), DATEADD(MINUTE, -15, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    2, 4, 2, NULL, 1, Id, 24, NULL, 1, 'Completed', 1, 
+    DATEADD(MINUTE, -45, GETDATE()), DATEADD(MINUTE, -10, GETDATE())
+FROM #CurrentTournament;
+
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, 
+                       MainTension, CrossTension, IsTensionInKg, Status, Priority, CreatedAt, CompletedAt)
+SELECT 
+    3, 6, 5, NULL, 2, Id, 25, NULL, 1, 'Completed', 2, 
+    DATEADD(MINUTE, -30, GETDATE()), DATEADD(MINUTE, -5, GETDATE())
+FROM #CurrentTournament;
+
+-- Eliminar la tabla temporal
+DROP TABLE #CurrentTournament;
 GO
 
 -- Imprimir resumen
 PRINT 'Base de datos StringManagerDb creada con éxito.';
 PRINT 'Tablas creadas: Users, Players, Racquets, StringTypes, Stringers, Tournaments, StringJobs';
-PRINT 'Datos de muestra insertados correctamente.';
+PRINT 'Datos de muestra insertados correctamente con fechas dinámicas basadas en la fecha actual.';
 GO
