@@ -215,15 +215,6 @@ VALUES
  DATEFROMPARTS(YEAR(GETDATE()), 7, 13), 
  'London, United Kingdom', 'Grand Slam');
 
--- Torneo actual (que incluye la fecha actual)
-INSERT INTO Tournaments (Name, StartDate, EndDate, Location, Category)
-VALUES 
-('Current Tournament ' + CAST(YEAR(GETDATE()) AS VARCHAR), 
- DATEADD(DAY, -6, GETDATE()), 
- DATEADD(DAY, 4, GETDATE()), 
- 'Current Location, Country', 'ATP 1000');
-GO
-
 -- Crear una tabla temporal para almacenar el ID del torneo actual
 CREATE TABLE #CurrentTournament (Id INT);
 
