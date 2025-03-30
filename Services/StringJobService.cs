@@ -596,7 +596,10 @@ public class StringJobService : IStringJobService
         _context.StringJobs.Add(stringJob);
         await _context.SaveChangesAsync();
 
-        return await GetByIdAsync(stringJob.Id);
+        var result = await GetByIdAsync(stringJob.Id);
+        if (result == null)
+            throw new InvalidOperationException("No se pudo recuperar el trabajo de encordado creado.");
+        return result;
     }
 
     public async Task<bool> UpdateAsync(int id, UpdateStringJobDto updateDto)
