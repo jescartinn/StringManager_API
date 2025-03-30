@@ -48,7 +48,7 @@ public class TournamentsController : ControllerBase
 
         if (tournament == null)
         {
-            return NotFound("No hay torneos activos en la fecha actual.");
+            return NoContent();
         }
 
         return Ok(tournament);
