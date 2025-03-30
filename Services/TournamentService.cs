@@ -49,7 +49,7 @@ public class TournamentService : ITournamentService
     {
         var currentDate = DateTime.Now.Date;
 
-        return await _context.Tournaments
+        var tournament = await _context.Tournaments
             .Where(t => t.StartDate <= currentDate && t.EndDate >= currentDate)
             .OrderBy(t => t.StartDate)
             .Select(t => new TournamentDto
@@ -62,6 +62,8 @@ public class TournamentService : ITournamentService
                 Category = t.Category
             })
             .FirstOrDefaultAsync();
+
+        return tournament;
     }
 
     public async Task<TournamentDto> CreateAsync(CreateTournamentDto createDto)
