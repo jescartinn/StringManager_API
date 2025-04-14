@@ -27,6 +27,7 @@ public class StringJobDto
     public double MainTension { get; set; }
     public double? CrossTension { get; set; }
     public bool IsTensionInKg { get; set; }
+    public string? Logo { get; set; }
     
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }
@@ -46,6 +47,7 @@ public class CreateStringJobDto
     public double MainTension { get; set; }
     public double? CrossTension { get; set; }
     public bool IsTensionInKg { get; set; } = true;
+    public string? Logo { get; set; }
     
     public string? Notes { get; set; }
     public int? Priority { get; set; }
@@ -60,6 +62,7 @@ public class UpdateStringJobDto
     public double MainTension { get; set; }
     public double? CrossTension { get; set; }
     public bool IsTensionInKg { get; set; } = true;
+    public string? Logo { get; set; }
     
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }

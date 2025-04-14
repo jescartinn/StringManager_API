@@ -28,6 +28,7 @@ public class StringJob
     public double MainTension { get; set; } // en kg o lb
     public double? CrossTension { get; set; } // si es diferente de MainTension
     public bool IsTensionInKg { get; set; } = true; // true = kg, false = lb
+    public string? Logo { get; set; } // Campo para indicar el logo a pintar
     
     public string Status { get; set; } = "Pending"; // Pending, InProgress, Completed, Cancelled
     public string? Notes { get; set; }
