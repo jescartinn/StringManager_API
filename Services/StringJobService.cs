@@ -91,6 +91,7 @@ public class StringJobService : IStringJobService
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority
@@ -174,6 +175,7 @@ public class StringJobService : IStringJobService
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority
@@ -259,6 +261,7 @@ public class StringJobService : IStringJobService
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority
@@ -349,6 +352,7 @@ public class StringJobService : IStringJobService
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority
@@ -438,6 +442,7 @@ public class StringJobService : IStringJobService
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority
@@ -527,6 +532,7 @@ public class StringJobService : IStringJobService
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority
