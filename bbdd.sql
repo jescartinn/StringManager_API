@@ -93,6 +93,7 @@ CREATE TABLE StringJobs (
     MainTension FLOAT NOT NULL,
     CrossTension FLOAT NULL,
     IsTensionInKg BIT NOT NULL DEFAULT 1,
+    Logo NVARCHAR(200) NULL,
     Status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
     Notes NVARCHAR(1000) NULL,
     Priority INT NULL,

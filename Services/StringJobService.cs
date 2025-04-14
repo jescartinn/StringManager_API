@@ -587,6 +587,7 @@ public class StringJobService : IStringJobService
             MainTension = createDto.MainTension,
             CrossTension = createDto.CrossTension,
             IsTensionInKg = createDto.IsTensionInKg,
+            Logo = createDto.Logo,
             Notes = createDto.Notes,
             Priority = createDto.Priority,
             Status = "Pending",
@@ -645,6 +646,7 @@ public class StringJobService : IStringJobService
         stringJob.MainTension = updateDto.MainTension;
         stringJob.CrossTension = updateDto.CrossTension;
         stringJob.IsTensionInKg = updateDto.IsTensionInKg;
+        stringJob.Logo = updateDto.Logo;
         stringJob.Status = updateDto.Status;
         stringJob.Notes = updateDto.Notes;
         stringJob.Priority = updateDto.Priority;
