@@ -8,7 +8,7 @@ public class Racquet
     public string Brand { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
     public string? SerialNumber { get; set; }
-    public double? HeadSize { get; set; } // en pulgadas cuadradas
+    public double? HeadSize { get; set; }
     public string? Notes { get; set; }
     public ICollection<StringJob> StringJobs { get; set; } = new List<StringJob>();
 }

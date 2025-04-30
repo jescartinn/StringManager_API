@@ -22,7 +22,7 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configure User entity
+        // Configurar User entity
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();

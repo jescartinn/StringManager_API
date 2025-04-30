@@ -49,7 +49,7 @@ public class DashboardService : IDashboardService
                 HighPriorityJobs = 0
             };
 
-        // Mejor encordadores usando
+        // Mejores encordadores
         var topStringers = await _context.StringJobs
             .Where(sj => sj.Status == "Completed" &&
                     sj.CompletedAt.HasValue &&

@@ -26,15 +26,15 @@ public class UserService : IUserService
             return null;
         }
 
-        // Update last login time
+        // Actualizar last login time
         user.LastLoginAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
-        // Generate JWT token
+        // Generar JWT token
         var token = _jwtService.GenerateToken(user);
 
-        // Use settings to calculate expiration time
-        var jwtSettings = new JwtSettings(); // This should be injected via IOptions<JwtSettings>
+        // Calcular tiempo de expiración
+        var jwtSettings = new JwtSettings();
         var expiration = DateTime.UtcNow.AddMinutes(jwtSettings.DurationInMinutes);
 
         return new AuthResponseDto
@@ -55,25 +55,25 @@ public class UserService : IUserService
 
     public async Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto)
     {
-        // Check if password and confirm password match
+        // Verificar si las contraseñas coinciden
         if (registerDto.Password != registerDto.ConfirmPassword)
         {
             return null;
         }
 
-        // Check if username is already taken
+        // Verificar si el usuario ya existe
         if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
         {
             return null;
         }
 
-        // Check if email is already registered
+        // Verificar si el email ya existe
         if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
         {
             return null;
         }
 
-        // Create new user
+        // Crear nuevo usuario
         var user = new User
         {
             Username = registerDto.Username,
@@ -87,10 +87,10 @@ public class UserService : IUserService
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        // Generate JWT token
+        // Generar JWT token
         var token = _jwtService.GenerateToken(user);
 
-        // Calculate expiration time
+        // Calcular tiempo de expiración
         var expiration = DateTime.Now.AddHours(1);
 
         return new AuthResponseDto
@@ -138,19 +138,19 @@ public class UserService : IUserService
             return false;
         }
 
-        // Verify current password
+        // Verificar contraseña actual
         if (!BCrypt.Net.BCrypt.Verify(changePasswordDto.CurrentPassword, user.PasswordHash))
         {
             return false;
         }
 
-        // Check if new password and confirm password match
+        // Verificar si las contraseñas coinciden
         if (changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword)
         {
             return false;
         }
 
-        // Update password
+        // Actualizar contraseña
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(changePasswordDto.NewPassword);
         await _context.SaveChangesAsync();
 
@@ -166,23 +166,23 @@ public class UserService : IUserService
             return false;
         }
 
-        // Check if username is already taken by another user
+        // Verificar si el nombre de usuario está en uso por otro usuario
         if (await _context.Users.AnyAsync(u => u.Username == userDto.Username && u.Id != userId))
         {
             return false;
         }
 
-        // Check if email is already registered by another user
+        // Verificar si el email está en uso por otro usuario
         if (await _context.Users.AnyAsync(u => u.Email == userDto.Email && u.Id != userId))
         {
             return false;
         }
 
-        // Update user
+        // Actualizar usuario
         user.Username = userDto.Username;
         user.Email = userDto.Email;
 
-        // Only allow role update if current role is Admin
+        // Sólo permitir cambiar de rol si el rol actual es Admin
         if (user.Role == "Admin")
         {
             user.Role = userDto.Role;
