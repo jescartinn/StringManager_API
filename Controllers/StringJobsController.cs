@@ -60,7 +60,6 @@ public class StringJobsController : ControllerBase
     {
         var stringJobs = await _stringJobService.GetByPlayerIdAsync(playerId);
 
-        // Si la lista está vacía, probablemente el jugador no existe
         if (!stringJobs.Any())
         {
             return NotFound("El jugador especificado no existe o no tiene trabajos de encordado.");
@@ -75,7 +74,6 @@ public class StringJobsController : ControllerBase
     {
         var stringJobs = await _stringJobService.GetByStringerIdAsync(stringerId);
 
-        // Si la lista está vacía, probablemente el encordador no existe
         if (!stringJobs.Any())
         {
             return NotFound("El encordador especificado no existe o no tiene trabajos de encordado asignados.");

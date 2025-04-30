@@ -43,13 +43,15 @@ public class JwtService : IJwtService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
+
             // Añadir el rol como un claim específico para la autorización
             new Claim(ClaimTypes.Role, user.Role),
+
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
 
-        // Si el usuario tiene múltiples roles (en el futuro), se pueden agregar así:
+        // En el caso de que el usuario tenga múltiples roles (en el futuro):
         // foreach (var role in user.Roles) { claims.Add(new Claim(ClaimTypes.Role, role)); }
 
         var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes);
@@ -79,7 +81,7 @@ public class JwtService : IJwtService
             ValidIssuer = _jwtSettings.Issuer,
             ValidAudience = _jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ClockSkew = TimeSpan.Zero // Elimina la tolerancia de tiempo predeterminada
+            ClockSkew = TimeSpan.Zero
         };
 
         try
@@ -97,7 +99,6 @@ public class JwtService : IJwtService
         }
         catch
         {
-            // Si ocurre algún error en la validación, retornamos null
             return null;
         }
     }

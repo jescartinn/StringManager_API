@@ -7,6 +7,6 @@ public class Tournament
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string? Location { get; set; }
-    public string? Category { get; set; } // Grand Slam, ATP 1000, etc.
+    public string? Category { get; set; }
     public ICollection<StringJob> StringJobs { get; set; } = new List<StringJob>();
 }
