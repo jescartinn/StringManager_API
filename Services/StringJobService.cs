@@ -94,7 +94,9 @@ public class StringJobService : IStringJobService
                 Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
-                Priority = sj.Priority
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
             })
             .ToListAsync();
     }
@@ -178,7 +180,9 @@ public class StringJobService : IStringJobService
                 Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
-                Priority = sj.Priority
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
             })
             .FirstOrDefaultAsync();
     }
@@ -264,7 +268,9 @@ public class StringJobService : IStringJobService
                 Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
-                Priority = sj.Priority
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
             })
             .ToListAsync();
     }
@@ -355,7 +361,9 @@ public class StringJobService : IStringJobService
                 Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
-                Priority = sj.Priority
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
             })
             .ToListAsync();
     }
@@ -445,7 +453,9 @@ public class StringJobService : IStringJobService
                 Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
-                Priority = sj.Priority
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
             })
             .ToListAsync();
     }
@@ -535,7 +545,9 @@ public class StringJobService : IStringJobService
                 Logo = sj.Logo,
                 Status = sj.Status,
                 Notes = sj.Notes,
-                Priority = sj.Priority
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
             })
             .ToListAsync();
     }
@@ -596,6 +608,8 @@ public class StringJobService : IStringJobService
             Logo = createDto.Logo,
             Notes = createDto.Notes,
             Priority = createDto.Priority,
+            Price = createDto.Price,
+            IsPaid = createDto.IsPaid,
             Status = "Pending",
             CreatedAt = DateTime.Now
         };
@@ -656,6 +670,129 @@ public class StringJobService : IStringJobService
         stringJob.Status = updateDto.Status;
         stringJob.Notes = updateDto.Notes;
         stringJob.Priority = updateDto.Priority;
+        stringJob.Price = updateDto.Price;
+        stringJob.IsPaid = updateDto.IsPaid;
+
+        _context.Entry(stringJob).State = EntityState.Modified;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await StringJobExistsAsync(id))
+                return false;
+            else
+                throw;
+        }
+    }
+
+    public async Task<IEnumerable<StringJobDto>> GetUnpaidJobsByPlayerIdAsync(int playerId)
+    {
+        // Verificar si el jugador existe
+        var playerExists = await _context.Players.AnyAsync(p => p.Id == playerId);
+        if (!playerExists)
+            return Enumerable.Empty<StringJobDto>();
+
+        return await _context.StringJobs
+            .Where(sj => sj.PlayerId == playerId && sj.Status == "Completed" && !sj.IsPaid)
+            .Include(sj => sj.Player)
+            .Include(sj => sj.Racquet)
+            .Include(sj => sj.MainString)
+            .Include(sj => sj.CrossString)
+            .Include(sj => sj.Stringer)
+            .Include(sj => sj.Tournament)
+            .OrderByDescending(sj => sj.CompletedAt)
+            .Select(sj => new StringJobDto
+            {
+                Id = sj.Id,
+                PlayerId = sj.PlayerId,
+                Player = sj.Player != null ? new PlayerDto
+                {
+                    Id = sj.Player.Id,
+                    Name = sj.Player.Name,
+                    LastName = sj.Player.LastName,
+                    CountryCode = sj.Player.CountryCode
+                } : null,
+                RacquetId = sj.RacquetId,
+                Racquet = sj.Racquet != null ? new RacquetDto
+                {
+                    Id = sj.Racquet.Id,
+                    PlayerId = sj.Racquet.PlayerId,
+                    Brand = sj.Racquet.Brand,
+                    Model = sj.Racquet.Model,
+                    SerialNumber = sj.Racquet.SerialNumber,
+                    HeadSize = sj.Racquet.HeadSize,
+                    Notes = sj.Racquet.Notes
+                } : null,
+                MainStringId = sj.MainStringId,
+                MainString = sj.MainString != null ? new StringTypeDto
+                {
+                    Id = sj.MainString.Id,
+                    Brand = sj.MainString.Brand,
+                    Model = sj.MainString.Model,
+                    Gauge = sj.MainString.Gauge,
+                    Material = sj.MainString.Material,
+                    Color = sj.MainString.Color
+                } : null,
+                CrossStringId = sj.CrossStringId,
+                CrossString = sj.CrossString != null ? new StringTypeDto
+                {
+                    Id = sj.CrossString.Id,
+                    Brand = sj.CrossString.Brand,
+                    Model = sj.CrossString.Model,
+                    Gauge = sj.CrossString.Gauge,
+                    Material = sj.CrossString.Material,
+                    Color = sj.CrossString.Color
+                } : null,
+                StringerId = sj.StringerId,
+                Stringer = sj.Stringer != null ? new StringerDto
+                {
+                    Id = sj.Stringer.Id,
+                    Name = sj.Stringer.Name,
+                    LastName = sj.Stringer.LastName,
+                    Email = sj.Stringer.Email,
+                    PhoneNumber = sj.Stringer.PhoneNumber
+                } : null,
+                TournamentId = sj.TournamentId,
+                Tournament = sj.Tournament != null ? new TournamentDto
+                {
+                    Id = sj.Tournament.Id,
+                    Name = sj.Tournament.Name,
+                    StartDate = sj.Tournament.StartDate,
+                    EndDate = sj.Tournament.EndDate,
+                    Location = sj.Tournament.Location,
+                    Category = sj.Tournament.Category
+                } : null,
+                CreatedAt = sj.CreatedAt,
+                CompletedAt = sj.CompletedAt,
+                MainTension = sj.MainTension,
+                CrossTension = sj.CrossTension,
+                IsTensionInKg = sj.IsTensionInKg,
+                Logo = sj.Logo,
+                Status = sj.Status,
+                Notes = sj.Notes,
+                Priority = sj.Priority,
+                Price = sj.Price,
+                IsPaid = sj.IsPaid
+            })
+            .ToListAsync();
+    }
+
+    public async Task<bool> MarkJobAsPaidAsync(int id)
+    {
+        var stringJob = await _context.StringJobs.FindAsync(id);
+
+        if (stringJob == null)
+            return false;
+
+        // Sólo trabajos completados se pueden marcar como pagados
+        if (stringJob.Status != "Completed")
+            return false;
+
+        stringJob.IsPaid = true;
 
         _context.Entry(stringJob).State = EntityState.Modified;
 

@@ -8,6 +8,8 @@ public interface IStringJobService : IBaseService<StringJobDto, CreateStringJobD
     Task<IEnumerable<StringJobDto>> GetByTournamentIdAsync(int tournamentId);
     Task<IEnumerable<StringJobDto>> GetByPlayerIdAsync(int playerId);
     Task<IEnumerable<StringJobDto>> GetByStringerIdAsync(int stringerId);
+    Task<IEnumerable<StringJobDto>> GetUnpaidJobsByPlayerIdAsync(int playerId);
+    Task<bool> MarkJobAsPaidAsync(int id);
     Task<bool> CompleteJobAsync(int id, CompleteStringJobDto completeDto);
     Task<bool> CancelJobAsync(int id, string? cancelReason);
     Task<bool> StartJobAsync(int id);

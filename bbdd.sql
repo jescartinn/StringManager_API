@@ -95,6 +95,8 @@ CREATE TABLE StringJobs (
     IsTensionInKg BIT NOT NULL DEFAULT 1,
     Logo NVARCHAR(200) NULL,
     Status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
+    Price DECIMAL(20,2) NOT NULL DEFAULT 25.0,
+    IsPaid BIT NOT NULL DEFAULT 0,
     Notes NVARCHAR(1000) NULL,
     Priority INT NULL,
     CONSTRAINT FK_StringJobs_Players FOREIGN KEY (PlayerId) 
@@ -122,6 +124,7 @@ CREATE INDEX IX_StringJobs_StringerId ON StringJobs (StringerId);
 CREATE INDEX IX_StringJobs_TournamentId ON StringJobs (TournamentId);
 CREATE INDEX IX_StringJobs_Status ON StringJobs (Status);
 CREATE INDEX IX_StringJobs_CreatedAt ON StringJobs (CreatedAt);
+CREATE INDEX IX_StringJobs_IsPaid ON StringJobs (IsPaid);
 CREATE INDEX IX_Tournaments_StartDate_EndDate ON Tournaments (StartDate, EndDate);
 GO
 

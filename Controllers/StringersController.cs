@@ -18,7 +18,6 @@ public class StringersController : ControllerBase
         _stringerService = stringerService;
     }
 
-    // GET: api/Stringers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StringerDto>>> GetStringers()
     {
@@ -26,7 +25,6 @@ public class StringersController : ControllerBase
         return Ok(stringers);
     }
 
-    // GET: api/Stringers/5
     [HttpGet("{id}")]
     public async Task<ActionResult<StringerDto>> GetStringer(int id)
     {
@@ -40,7 +38,6 @@ public class StringersController : ControllerBase
         return Ok(stringer);
     }
 
-    // POST: api/Stringers
     [HttpPost]
     [AuthorizeRoles("Admin")]
     public async Task<ActionResult<StringerDto>> CreateStringer(CreateStringerDto createStringerDto)
@@ -49,7 +46,6 @@ public class StringersController : ControllerBase
         return CreatedAtAction(nameof(GetStringer), new { id = stringer.Id }, stringer);
     }
 
-    // PUT: api/Stringers/5
     [HttpPut("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> UpdateStringer(int id, UpdateStringerDto updateStringerDto)
@@ -64,7 +60,6 @@ public class StringersController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/Stringers/5
     [HttpDelete("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteStringer(int id)

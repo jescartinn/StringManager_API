@@ -18,7 +18,6 @@ public class TournamentsController : ControllerBase
         _tournamentService = tournamentService;
     }
 
-    // GET: api/Tournaments
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments()
     {
@@ -26,7 +25,6 @@ public class TournamentsController : ControllerBase
         return Ok(tournaments);
     }
 
-    // GET: api/Tournaments/5
     [HttpGet("{id}")]
     public async Task<ActionResult<TournamentDto>> GetTournament(int id)
     {
@@ -40,7 +38,6 @@ public class TournamentsController : ControllerBase
         return Ok(tournament);
     }
 
-    // GET: api/Tournaments/current
     [HttpGet("current")]
     public async Task<ActionResult<TournamentDto>> GetCurrentTournament()
     {
@@ -54,7 +51,6 @@ public class TournamentsController : ControllerBase
         return Ok(tournament);
     }
 
-    // POST: api/Tournaments
     [HttpPost]
     [AuthorizeRoles("Admin")]
     public async Task<ActionResult<TournamentDto>> CreateTournament(CreateTournamentDto createTournamentDto)
@@ -70,7 +66,6 @@ public class TournamentsController : ControllerBase
         }
     }
 
-    // PUT: api/Tournaments/5
     [HttpPut("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> UpdateTournament(int id, UpdateTournamentDto updateTournamentDto)
@@ -92,7 +87,6 @@ public class TournamentsController : ControllerBase
         }
     }
 
-    // DELETE: api/Tournaments/5
     [HttpDelete("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteTournament(int id)

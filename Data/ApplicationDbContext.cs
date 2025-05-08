@@ -22,7 +22,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configurar User entity
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();
@@ -30,8 +29,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
-
-        // Configurar relaciones y restricciones
 
         // Player - Racquet (1:N)
         modelBuilder.Entity<Racquet>()

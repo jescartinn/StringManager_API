@@ -16,7 +16,6 @@ public class DashboardController : ControllerBase
         _dashboardService = dashboardService;
     }
 
-    // GET: api/Dashboard/stats
     [HttpGet("stats")]
     public async Task<ActionResult<object>> GetDashboardStats()
     {
@@ -24,7 +23,6 @@ public class DashboardController : ControllerBase
         return Ok(stats);
     }
 
-    // GET: api/Dashboard/distribution
     [HttpGet("distribution")]
     public async Task<ActionResult<object>> GetDistributionStats([FromQuery] int? tournamentId = null)
     {

@@ -113,41 +113,41 @@ VALUES
     (6, 'Head', 'Gravity Pro', 'AR2023-002', 100, 'Backup racquet');
 GO
 
--- Add sample string jobs
-INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, CreatedAt, CompletedAt, MainTension, CrossTension, IsTensionInKg, Logo, Status, Notes, Priority)
+-- Add sample string jobs with Price and IsPaid fields
+INSERT INTO StringJobs (PlayerId, RacquetId, MainStringId, CrossStringId, StringerId, TournamentId, CreatedAt, CompletedAt, MainTension, CrossTension, IsTensionInKg, Logo, Status, Price, IsPaid, Notes, Priority)
 VALUES
     -- Completed jobs
-    (1, 7, 1, NULL, 1, 1, '2025-01-20 08:00:00', '2025-01-20 08:30:00', 25.0, NULL, 1, 'Head White', 'Completed', 'First round preparation', 1),
-    (1, 8, 1, NULL, 1, 1, '2025-01-21 09:00:00', '2025-01-21 09:35:00', 25.0, NULL, 1, 'Head White', 'Completed', 'Second round preparation', 1),
-    (2, 1, 2, NULL, 2, 1, '2025-01-20 10:00:00', '2025-01-20 10:40:00', 26.5, NULL, 1, 'Head Black', 'Completed', 'First round preparation', 1),
-    (3, 4, 5, NULL, 3, 1, '2025-01-20 11:00:00', '2025-01-20 11:45:00', 25.0, NULL, 1, 'Babolat White', 'Completed', 'First round preparation', 1),
-    (101, 16, 3, 4, 4, 1, '2025-01-20 12:00:00', '2025-01-20 12:30:00', 24.0, 23.0, 1, 'Wilson White', 'Completed', 'First round preparation', 1),
-    (102, 14, 6, NULL, 5, 1, '2025-01-20 13:00:00', '2025-01-20 13:40:00', 26.0, NULL, 1, 'Tecnifibre White', 'Completed', 'First round preparation', 1),
+    (1, 7, 1, NULL, 1, 1, '2025-01-20 08:00:00', '2025-01-20 08:30:00', 25.0, NULL, 1, 'Head White', 'Completed', 30.00, 1, 'First round preparation', 1),
+    (1, 8, 1, NULL, 1, 1, '2025-01-21 09:00:00', '2025-01-21 09:35:00', 25.0, NULL, 1, 'Head White', 'Completed', 30.00, 1, 'Second round preparation', 1),
+    (2, 1, 2, NULL, 2, 1, '2025-01-20 10:00:00', '2025-01-20 10:40:00', 26.5, NULL, 1, 'Head Black', 'Completed', 30.00, 1, 'First round preparation', 1),
+    (3, 4, 5, NULL, 3, 1, '2025-01-20 11:00:00', '2025-01-20 11:45:00', 25.0, NULL, 1, 'Babolat White', 'Completed', 30.00, 1, 'First round preparation', 1),
+    (101, 16, 3, 4, 4, 1, '2025-01-20 12:00:00', '2025-01-20 12:30:00', 24.0, 23.0, 1, 'Wilson White', 'Completed', 35.00, 1, 'First round preparation', 1),
+    (102, 14, 6, NULL, 5, 1, '2025-01-20 13:00:00', '2025-01-20 13:40:00', 26.0, NULL, 1, 'Tecnifibre White', 'Completed', 30.00, 1, 'First round preparation', 1),
     
     -- Roland Garros jobs
-    (1, 7, 1, NULL, 1, 2, '2025-05-25 08:00:00', '2025-05-25 08:30:00', 25.0, NULL, 1, 'Head White', 'Completed', 'First round preparation', 1),
-    (2, 1, 2, NULL, 2, 2, '2025-05-25 09:00:00', '2025-05-25 09:30:00', 26.5, NULL, 1, 'Head White', 'Completed', 'First round preparation', 1),
+    (1, 7, 1, NULL, 1, 2, '2025-05-25 08:00:00', '2025-05-25 08:30:00', 25.0, NULL, 1, 'Head White', 'Completed', 30.00, 1, 'First round preparation', 1),
+    (2, 1, 2, NULL, 2, 2, '2025-05-25 09:00:00', '2025-05-25 09:30:00', 26.5, NULL, 1, 'Head White', 'Completed', 30.00, 1, 'First round preparation', 1),
     
     -- Wimbledon jobs
-    (1, 7, 1, NULL, 1, 3, '2025-06-30 08:00:00', '2025-06-30 08:30:00', 26.0, NULL, 1, 'Head Black', 'Completed', 'First round preparation', 1),
-    (2, 2, 2, NULL, 2, 3, '2025-06-30 09:00:00', '2025-06-30 09:30:00', 27.0, NULL, 1, 'Head Black', 'Completed', 'First round preparation', 1),
+    (1, 7, 1, NULL, 1, 3, '2025-06-30 08:00:00', '2025-06-30 08:30:00', 26.0, NULL, 1, 'Head Black', 'Completed', 30.00, 1, 'First round preparation', 1),
+    (2, 2, 2, NULL, 2, 3, '2025-06-30 09:00:00', '2025-06-30 09:30:00', 27.0, NULL, 1, 'Head Black', 'Completed', 30.00, 1, 'First round preparation', 1),
     
     -- US Open jobs
-    (1, 7, 1, NULL, 1, 4, '2025-08-25 08:00:00', '2025-08-25 08:30:00', 25.0, NULL, 1, 'Head White', 'Completed', 'First round preparation', 1),
-    (2, 1, 2, NULL, 2, 4, '2025-08-25 09:00:00', '2025-08-25 09:30:00', 26.5, NULL, 1, 'Head White', 'Completed', 'First round preparation', 1),
+    (1, 7, 1, NULL, 1, 4, '2025-08-25 08:00:00', '2025-08-25 08:30:00', 25.0, NULL, 1, 'Head White', 'Completed', 30.00, 1, 'First round preparation', 1),
+    (2, 1, 2, NULL, 2, 4, '2025-08-25 09:00:00', '2025-08-25 09:30:00', 26.5, NULL, 1, 'Head White', 'Completed', 30.00, 1, 'First round preparation', 1),
     
     -- Current pending jobs for the Barcelona Open
-    (1, 7, 1, NULL, 1, 10, '2025-04-15 08:00:00', NULL, 25.0, NULL, 1, 'Head Red', 'Pending', 'First round preparation', 1),
-    (2, 1, 2, NULL, 2, 10, '2025-04-15 08:30:00', NULL, 26.5, NULL, 1, 'Head White', 'Pending', 'First round preparation', 1),
-    (3, 4, 5, NULL, 3, 10, '2025-04-15 09:00:00', NULL, 25.0, NULL, 1, 'Babolat White', 'Pending', 'First round preparation', 1),
-    (101, 16, 3, 4, 4, 10, '2025-04-15 09:30:00', NULL, 24.0, 23.0, 1, 'Wilson Black', 'Pending', 'First round preparation', 1),
-    (102, 14, 6, NULL, 5, 10, '2025-04-15 10:00:00', NULL, 26.0, NULL, 1, 'Tecnifibre White', 'Pending', 'First round preparation', 1),
+    (1, 7, 1, NULL, 1, 10, '2025-04-15 08:00:00', NULL, 25.0, NULL, 1, 'Head Red', 'Pending', 30.00, 0, 'First round preparation', 1),
+    (2, 1, 2, NULL, 2, 10, '2025-04-15 08:30:00', NULL, 26.5, NULL, 1, 'Head White', 'Pending', 30.00, 0, 'First round preparation', 1),
+    (3, 4, 5, NULL, 3, 10, '2025-04-15 09:00:00', NULL, 25.0, NULL, 1, 'Babolat White', 'Pending', 30.00, 0, 'First round preparation', 1),
+    (101, 16, 3, 4, 4, 10, '2025-04-15 09:30:00', NULL, 24.0, 23.0, 1, 'Wilson Black', 'Pending', 35.00, 0, 'First round preparation', 1),
+    (102, 14, 6, NULL, 5, 10, '2025-04-15 10:00:00', NULL, 26.0, NULL, 1, 'Tecnifibre White', 'Pending', 30.00, 0, 'First round preparation', 1),
     
     -- Jobs in progress for the Barcelona Open
-    (4, 18, 7, NULL, 1, 10, '2025-04-15 10:30:00', NULL, 25.5, NULL, 1, 'Head Black', 'InProgress', 'First round preparation', 1),
-    (5, 20, 8, NULL, 2, 10, '2025-04-15 11:00:00', NULL, 27.0, NULL, 1, 'Tecnifibre White', 'InProgress', 'First round preparation', 2),
+    (4, 18, 7, NULL, 1, 10, '2025-04-15 10:30:00', NULL, 25.5, NULL, 1, 'Head Black', 'InProgress', 30.00, 0, 'First round preparation', 1),
+    (5, 20, 8, NULL, 2, 10, '2025-04-15 11:00:00', NULL, 27.0, NULL, 1, 'Tecnifibre White', 'InProgress', 30.00, 0, 'First round preparation', 2),
 
     -- Add a few cancelled jobs
-    (6, 22, 9, NULL, 3, 10, '2025-04-15 11:30:00', NULL, 26.0, NULL, 1, 'Head White', 'Cancelled', 'Cancelled due to player withdrawal', 2),
-    (104, 18, 10, NULL, 4, 10, '2025-04-15 12:00:00', NULL, 25.0, NULL, 1, 'Wilson Black', 'Cancelled', 'Player changed racquet', 3);
+    (6, 22, 9, NULL, 3, 10, '2025-04-15 11:30:00', NULL, 26.0, NULL, 1, 'Head White', 'Cancelled', 30.00, 0, 'Cancelled due to player withdrawal', 2),
+    (104, 18, 10, NULL, 4, 10, '2025-04-15 12:00:00', NULL, 25.0, NULL, 1, 'Wilson Black', 'Cancelled', 30.00, 0, 'Player changed racquet', 3);
 GO

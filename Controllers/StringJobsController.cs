@@ -18,7 +18,6 @@ public class StringJobsController : ControllerBase
         _stringJobService = stringJobService;
     }
 
-    // GET: api/StringJobs
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StringJobDto>>> GetStringJobs([FromQuery] string? status = null, [FromQuery] int? tournamentId = null)
     {
@@ -40,7 +39,6 @@ public class StringJobsController : ControllerBase
         return Ok(stringJobs);
     }
 
-    // GET: api/StringJobs/5
     [HttpGet("{id}")]
     public async Task<ActionResult<StringJobDto>> GetStringJob(int id)
     {
@@ -54,7 +52,6 @@ public class StringJobsController : ControllerBase
         return Ok(stringJob);
     }
 
-    // GET: api/StringJobs/player/5
     [HttpGet("player/{playerId}")]
     public async Task<ActionResult<IEnumerable<StringJobDto>>> GetStringJobsByPlayer(int playerId)
     {
@@ -68,7 +65,6 @@ public class StringJobsController : ControllerBase
         return Ok(stringJobs);
     }
 
-    // GET: api/StringJobs/stringer/5
     [HttpGet("stringer/{stringerId}")]
     public async Task<ActionResult<IEnumerable<StringJobDto>>> GetStringJobsByStringer(int stringerId)
     {
@@ -82,7 +78,6 @@ public class StringJobsController : ControllerBase
         return Ok(stringJobs);
     }
 
-    // POST: api/StringJobs
     [HttpPost]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<StringJobDto>> CreateStringJob(CreateStringJobDto createStringJobDto)
@@ -98,7 +93,6 @@ public class StringJobsController : ControllerBase
         }
     }
 
-    // PUT: api/StringJobs/5
     [HttpPut("{id}")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdateStringJob(int id, UpdateStringJobDto updateStringJobDto)
@@ -113,7 +107,6 @@ public class StringJobsController : ControllerBase
         return NoContent();
     }
 
-    // PATCH: api/StringJobs/5/complete
     [HttpPatch("{id}/complete")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> CompleteStringJob(int id, CompleteStringJobDto completeStringJobDto)
@@ -128,7 +121,6 @@ public class StringJobsController : ControllerBase
         return NoContent();
     }
 
-    // PATCH: api/StringJobs/5/cancel
     [HttpPatch("{id}/cancel")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> CancelStringJob(int id, [FromBody] string? cancelReason)
@@ -143,7 +135,6 @@ public class StringJobsController : ControllerBase
         return NoContent();
     }
 
-    // PATCH: api/StringJobs/5/start
     [HttpPatch("{id}/start")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> StartStringJob(int id)
@@ -158,7 +149,6 @@ public class StringJobsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/StringJobs/5
     [HttpDelete("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteStringJob(int id)
@@ -168,6 +158,33 @@ public class StringJobsController : ControllerBase
         if (!result)
         {
             return BadRequest("Solo se pueden eliminar trabajos en estado pendiente.");
+        }
+
+        return NoContent();
+    }
+
+    [HttpGet("player/{playerId}/unpaid")]
+    public async Task<ActionResult<IEnumerable<StringJobDto>>> GetUnpaidStringJobsByPlayer(int playerId)
+    {
+        var stringJobs = await _stringJobService.GetUnpaidJobsByPlayerIdAsync(playerId);
+
+        if (!stringJobs.Any())
+        {
+            return NotFound("El jugador especificado no existe o no tiene trabajos de encordado pendientes de pago.");
+        }
+
+        return Ok(stringJobs);
+    }
+
+    [HttpPatch("{id}/paid")]
+    [AuthorizeRoles("Admin", "Stringer")]
+    public async Task<IActionResult> MarkStringJobAsPaid(int id)
+    {
+        var result = await _stringJobService.MarkJobAsPaidAsync(id);
+
+        if (!result)
+        {
+            return BadRequest("No se puede marcar el trabajo como pagado. Puede que no exista o no esté completado.");
         }
 
         return NoContent();

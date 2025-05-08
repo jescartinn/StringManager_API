@@ -33,6 +33,8 @@ public class StringJobDto
     public string? Notes { get; set; }
     
     public int? Priority { get; set; }
+    public decimal Price { get; set; }
+    public bool IsPaid { get; set; }
 }
 
 public class CreateStringJobDto
@@ -51,6 +53,8 @@ public class CreateStringJobDto
     
     public string? Notes { get; set; }
     public int? Priority { get; set; }
+    public decimal Price { get; set; } = 25.0m;
+    public bool IsPaid { get; set; } = false;
 }
 
 public class UpdateStringJobDto
@@ -68,4 +72,6 @@ public class UpdateStringJobDto
     public string? Notes { get; set; }
     
     public int? Priority { get; set; }
+    public decimal Price { get; set; }
+    public bool IsPaid { get; set; }
 }

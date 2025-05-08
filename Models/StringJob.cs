@@ -34,4 +34,6 @@ public class StringJob
     public string? Notes { get; set; }
     
     public int? Priority { get; set; } // 1 = alta, 2 = media, 3 = baja
+    public decimal Price { get; set; } = 25.0m;
+    public bool IsPaid { get; set; } = false;
 }

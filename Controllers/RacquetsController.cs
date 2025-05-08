@@ -18,7 +18,6 @@ public class RacquetsController : ControllerBase
         _racquetService = racquetService;
     }
 
-    // GET: api/Racquets
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RacquetDto>>> GetRacquets([FromQuery] int? playerId = null)
     {
@@ -36,7 +35,6 @@ public class RacquetsController : ControllerBase
         return Ok(racquets);
     }
 
-    // GET: api/Racquets/5
     [HttpGet("{id}")]
     public async Task<ActionResult<RacquetDto>> GetRacquet(int id)
     {
@@ -50,7 +48,6 @@ public class RacquetsController : ControllerBase
         return Ok(racquet);
     }
 
-    // POST: api/Racquets
     [HttpPost]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<RacquetDto>> CreateRacquet(CreateRacquetDto createRacquetDto)
@@ -66,7 +63,6 @@ public class RacquetsController : ControllerBase
         }
     }
 
-    // PUT: api/Racquets/5
     [HttpPut("{id}")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdateRacquet(int id, UpdateRacquetDto updateRacquetDto)
@@ -81,7 +77,6 @@ public class RacquetsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/Racquets/5
     [HttpDelete("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteRacquet(int id)

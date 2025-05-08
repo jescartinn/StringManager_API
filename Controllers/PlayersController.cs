@@ -18,7 +18,6 @@ public class PlayersController : ControllerBase
         _playerService = playerService;
     }
 
-    // GET: api/Players
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers()
     {
@@ -26,7 +25,6 @@ public class PlayersController : ControllerBase
         return Ok(players);
     }
 
-    // GET: api/Players/5
     [HttpGet("{id}")]
     public async Task<ActionResult<PlayerDto>> GetPlayer(int id)
     {
@@ -40,7 +38,6 @@ public class PlayersController : ControllerBase
         return Ok(player);
     }
 
-    // POST: api/Players
     [HttpPost]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto createPlayerDto)
@@ -49,7 +46,6 @@ public class PlayersController : ControllerBase
         return CreatedAtAction(nameof(GetPlayer), new { id = player.Id }, player);
     }
 
-    // PUT: api/Players/5
     [HttpPut("{id}")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdatePlayer(int id, UpdatePlayerDto updatePlayerDto)
@@ -64,7 +60,6 @@ public class PlayersController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/Players/5
     [HttpDelete("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeletePlayer(int id)

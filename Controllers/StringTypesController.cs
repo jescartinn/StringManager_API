@@ -18,7 +18,6 @@ public class StringTypesController : ControllerBase
         _stringTypeService = stringTypeService;
     }
 
-    // GET: api/StringTypes
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StringTypeDto>>> GetStringTypes()
     {
@@ -26,7 +25,6 @@ public class StringTypesController : ControllerBase
         return Ok(stringTypes);
     }
 
-    // GET: api/StringTypes/5
     [HttpGet("{id}")]
     public async Task<ActionResult<StringTypeDto>> GetStringType(int id)
     {
@@ -40,7 +38,6 @@ public class StringTypesController : ControllerBase
         return Ok(stringType);
     }
 
-    // POST: api/StringTypes
     [HttpPost]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<ActionResult<StringTypeDto>> CreateStringType(CreateStringTypeDto createStringTypeDto)
@@ -49,7 +46,6 @@ public class StringTypesController : ControllerBase
         return CreatedAtAction(nameof(GetStringType), new { id = stringType.Id }, stringType);
     }
 
-    // PUT: api/StringTypes/5
     [HttpPut("{id}")]
     [AuthorizeRoles("Admin", "Stringer")]
     public async Task<IActionResult> UpdateStringType(int id, UpdateStringTypeDto updateStringTypeDto)
@@ -64,7 +60,6 @@ public class StringTypesController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/StringTypes/5
     [HttpDelete("{id}")]
     [AuthorizeRoles("Admin")]
     public async Task<IActionResult> DeleteStringType(int id)
