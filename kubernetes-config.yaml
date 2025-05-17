@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stringmanager-config
+data:
+  appsettings.json: |
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Warning"
+        }
+      },
+      "AllowedHosts": "*",
+      "ConnectionStrings": {
+        "StringManagerDb": "Server=mssql-service;Database=StringManagerDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
+      },
+      "JwtSettings": {
+        "Key": "d7eced3a6ba34bf230e3064fcc371e6cd64f57aa56c243a2375660b2ccc16aa56e4ff9134e98a18c5f883805432fa2ea80fdf934b9b0901989e7a5dc23ffd45e359cde02e9d2c08be73f5ae5b170b39610fb46a23392d03df1fd4f189c6e2f63afbe59bed63232dbb9039b5fbb5d903c818b461c3123a15e3bdd8880183f4a3112d91f2df59d1d75605ee169bc0829ea4640e44c2224420a3b8a03d364d43e70df60c55fdc40384d1216e514570f3d3ec51d56b73685ee30a9524bc12b75b890f32ed20988b056c3469a5e2de32aa34ba066ea75db1804c850a4c48e87a0fb6f1e4d28da52d786b90cc0ba4b724ca78fe240ceb922510629bc1913b1d33f2789",
+        "Issuer": "StringManagerAPI",
+        "Audience": "StringManagerClient",
+        "DurationInMinutes": 60
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssql-deployment
+  labels:
+    app: mssql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mssql
+  template:
+    metadata:
+      labels:
+        app: mssql
+    spec:
+      containers:
+      - name: mssql
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "YourStrong@Passw0rd"
+        - name: MSSQL_PID
+          value: "Developer"
+        volumeMounts:
+        - name: mssql-data
+          mountPath: /var/opt/mssql
+      volumes:
+      - name: mssql-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-service
+spec:
+  selector:
+    app: mssql
+  ports:
+  - port: 1433
+    targetPort: 1433
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stringmanager-deployment
+  labels:
+    app: stringmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stringmanager
+  template:
+    metadata:
+      labels:
+        app: stringmanager
+    spec:
+      containers:
+      - name: stringmanager
+        image: your-docker-hub-username/stringmanager:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+      volumes:
+      - name: config-volume
+        configMap:
+          name: stringmanager-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stringmanager-service
+spec:
+  selector:
+    app: stringmanager
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
