@@ -73,21 +73,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stringmanager-deployment
+  name: stringmanager-api
   labels:
-    app: stringmanager
+    app: stringmanager-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: stringmanager
+      app: stringmanager-api
   template:
     metadata:
       labels:
-        app: stringmanager
+        app: stringmanager-api
     spec:
       containers:
-      - name: stringmanager
+      - name: stringmanager-api
         image: your-docker-hub-username/stringmanager:latest
         imagePullPolicy: IfNotPresent
         ports:
@@ -114,10 +114,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: stringmanager-service
+  name: stringmanager-service-api
 spec:
   selector:
-    app: stringmanager
+    app: stringmanager-api
   ports:
   - port: 80
     targetPort: 80
