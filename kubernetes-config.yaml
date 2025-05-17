@@ -26,53 +26,6 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mssql-deployment
-  labels:
-    app: mssql
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mssql
-  template:
-    metadata:
-      labels:
-        app: mssql
-    spec:
-      containers:
-      - name: mssql
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        ports:
-        - containerPort: 1433
-        env:
-        - name: ACCEPT_EULA
-          value: "Y"
-        - name: SA_PASSWORD
-          value: "YourStrong@Passw0rd"
-        - name: MSSQL_PID
-          value: "Developer"
-        volumeMounts:
-        - name: mssql-data
-          mountPath: /var/opt/mssql
-      volumes:
-      - name: mssql-data
-        emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mssql-service
-spec:
-  selector:
-    app: mssql
-  ports:
-  - port: 1433
-    targetPort: 1433
-  type: ClusterIP
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: stringmanager-api
   labels:
     app: stringmanager-api
@@ -91,7 +44,7 @@ spec:
         image: jaimeescartinsv/tfg:stringmanager-api
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         resources:
           limits:
             cpu: "1"
@@ -120,5 +73,5 @@ spec:
     app: stringmanager-api
   ports:
   - port: 80
-    targetPort: 80
+    targetPort: 8080
   type: LoadBalancer
