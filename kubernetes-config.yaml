@@ -88,7 +88,7 @@ spec:
     spec:
       containers:
       - name: stringmanager-api
-        image: your-docker-hub-username/stringmanager:latest
+        image: jaimeescartinsv/tfg:stringmanager-api
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
