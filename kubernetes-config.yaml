@@ -42,9 +42,9 @@ spec:
       containers:
       - name: stringmanager-api
         image: jaimeescartinsv/tfg:stringmanager-api
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 80
         resources:
           limits:
             cpu: "1"
@@ -59,6 +59,8 @@ spec:
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
+        - name: ASPNETCORE_URLS
+          value: "http://0.0.0.0:80"
       volumes:
       - name: config-volume
         configMap:
@@ -73,5 +75,5 @@ spec:
     app: stringmanager-api
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 80
   type: LoadBalancer
