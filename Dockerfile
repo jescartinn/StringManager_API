@@ -19,7 +19,6 @@ WORKDIR /app
 COPY --from=build /app/out ./
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://0.0.0.0:80
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Expose port
