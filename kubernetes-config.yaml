@@ -13,7 +13,7 @@ data:
       },
       "AllowedHosts": "*",
       "ConnectionStrings": {
-        "StringManagerDb": "Server=stringmanagerdb.crlsdafyk5rg.us-east-1.rds.amazonaws.com;Database=StringManagerDb;User Id=sa;Password=YourStrongPassw0rd;TrustServerCertificate=True;"
+        "StringManagerDb": "Server=database-1.c5salht9pwud.us-east-1.rds.amazonaws.com;Database=StringManagerDb;User Id=sa;Password=YourStrongPassw0rd;TrustServerCertificate=True;"
       },
       "JwtSettings": {
         "Key": "d7eced3a6ba34bf230e3064fcc371e6cd64f57aa56c243a2375660b2ccc16aa56e4ff9134e98a18c5f883805432fa2ea80fdf934b9b0901989e7a5dc23ffd45e359cde02e9d2c08be73f5ae5b170b39610fb46a23392d03df1fd4f189c6e2f63afbe59bed63232dbb9039b5fbb5d903c818b461c3123a15e3bdd8880183f4a3112d91f2df59d1d75605ee169bc0829ea4640e44c2224420a3b8a03d364d43e70df60c55fdc40384d1216e514570f3d3ec51d56b73685ee30a9524bc12b75b890f32ed20988b056c3469a5e2de32aa34ba066ea75db1804c850a4c48e87a0fb6f1e4d28da52d786b90cc0ba4b724ca78fe240ceb922510629bc1913b1d33f2789",
