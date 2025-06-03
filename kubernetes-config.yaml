@@ -72,7 +72,7 @@ metadata:
   name: stringmanager-service-api
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:354567012970:certificate/5de3a32f-02bd-4ba9-bf52-c9de4dcb913b
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:258261956526:certificate/ae74005f-9ea3-45ec-8e9a-cde649967988
     # Only run TLS on the port named "https" below.
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
 spec:
