@@ -181,6 +181,7 @@ public class UserService : IUserService
         // Actualizar usuario
         user.Username = userDto.Username;
         user.Email = userDto.Email;
+        user.Role = userDto.Role;
 
         // Sólo permitir cambiar de rol si el rol actual es Admin
         if (user.Role == "Admin")
