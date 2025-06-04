@@ -1,5 +1,4 @@
 using StringManager_API.DTOs;
-using StringManager_API.Models;
 
 namespace StringManager_API.Services;
 
@@ -12,4 +11,7 @@ public interface IUserService
     Task<bool> UpdateUserAsync(int userId, UserDto userDto);
     Task<bool> DeleteUserAsync(int userId);
     Task<IEnumerable<UserDto>> GetAllUsersAsync();
+    Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto);
+    Task<bool> ChangeUserPasswordAsync(int userId, string newPassword);
+    Task<bool> ChangeUserRoleAsync(int userId, string newRole);
 }

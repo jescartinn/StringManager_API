@@ -67,4 +67,46 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto createUserDto)
+    {
+        var result = await _userService.CreateUserAsync(createUserDto);
+
+        if (result == null)
+        {
+            return BadRequest("Error al crear el usuario. Verifique que los datos sean correctos.");
+        }
+
+        return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result);
+    }
+
+    [HttpPost("{id}/change-password")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ChangeUserPassword(int id, ChangeUserPasswordDto changePasswordDto)
+    {
+        var result = await _userService.ChangeUserPasswordAsync(id, changePasswordDto.NewPassword);
+
+        if (!result)
+        {
+            return BadRequest("No se pudo cambiar la contraseña del usuario.");
+        }
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id}/role")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ChangeUserRole(int id, ChangeUserRoleDto changeRoleDto)
+    {
+        var result = await _userService.ChangeUserRoleAsync(id, changeRoleDto.Role);
+
+        if (!result)
+        {
+            return BadRequest("No se pudo cambiar el rol del usuario.");
+        }
+
+        return NoContent();
+    }
 }

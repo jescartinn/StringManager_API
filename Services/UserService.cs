@@ -193,6 +193,76 @@ public class UserService : IUserService
         return true;
     }
 
+    public async Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto)
+    {
+        // Verificar si el usuario ya existe
+        if (await _context.Users.AnyAsync(u => u.Username == createUserDto.Username))
+        {
+            return null;
+        }
+
+        // Verificar si el email ya existe
+        if (await _context.Users.AnyAsync(u => u.Email == createUserDto.Email))
+        {
+            return null;
+        }
+
+        // Crear nuevo usuario
+        var user = new User
+        {
+            Username = createUserDto.Username,
+            Email = createUserDto.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password),
+            Role = createUserDto.Role,
+            CreatedAt = DateTime.UtcNow,
+            IsActive = true
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return new UserDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            Role = user.Role,
+            CreatedAt = user.CreatedAt,
+            LastLoginAt = user.LastLoginAt
+        };
+    }
+
+    public async Task<bool> ChangeUserPasswordAsync(int userId, string newPassword)
+    {
+        var user = await _context.Users.FindAsync(userId);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        // Actualizar contraseña
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool> ChangeUserRoleAsync(int userId, string newRole)
+    {
+        var user = await _context.Users.FindAsync(userId);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.Role = newRole;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
     public async Task<bool> DeleteUserAsync(int userId)
     {
         var user = await _context.Users.FindAsync(userId);
