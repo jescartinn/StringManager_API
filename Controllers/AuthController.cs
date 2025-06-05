@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
+using StringManager_API.Data;
 using System.Security.Claims;
 
 namespace StringManager_API.Controllers;
@@ -11,10 +12,14 @@ namespace StringManager_API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IJwtService _jwtService;
+    private readonly ApplicationDbContext _context;
 
-    public AuthController(IUserService userService)
+    public AuthController(IUserService userService, IJwtService jwtService, ApplicationDbContext context)
     {
         _userService = userService;
+        _jwtService = jwtService;
+        _context = context;
     }
 
     [HttpPost("register")]
@@ -83,5 +88,34 @@ public class AuthController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpPost("refresh-user-data")]
+    [Authorize]
+    public async Task<ActionResult<AuthResponseDto>> RefreshUserData()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int id))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _userService.GetUserByIdAsync(id);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userEntity = await _context.Users.FindAsync(id);
+        var newToken = _jwtService.GenerateToken(userEntity);
+
+        return Ok(new AuthResponseDto
+        {
+            Token = newToken,
+            User = user,
+            Expiration = DateTime.UtcNow.AddMinutes(60)
+        });
     }
 }
