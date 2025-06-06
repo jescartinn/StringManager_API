@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Base de datos
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: stringmanager-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrongPassw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+
+  # API
+  api:
+    build: .
+    container_name: stringmanager-api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__StringManagerDb=Server=db;Database=StringManagerDb;User Id=sa;Password=YourStrongPassw0rd;TrustServerCertificate=True;
+    depends_on:
+      - db
+
+volumes:
+  db_data:
