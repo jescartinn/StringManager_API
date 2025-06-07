@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StringManager_API.DTOs;
 using StringManager_API.Services;
+using System.Security.Claims;
 
 namespace StringManager_API.Controllers;
 
@@ -105,6 +106,12 @@ public class UsersController : ControllerBase
         if (!result)
         {
             return BadRequest("No se pudo cambiar el rol del usuario.");
+        }
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (currentUserId == id.ToString())
+        {
+            return Ok(new { requiresTokenRefresh = true });
         }
 
         return NoContent();
