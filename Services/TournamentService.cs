@@ -50,7 +50,7 @@ public class TournamentService : ITournamentService
         var currentDate = DateTime.Now.Date;
 
         var tournament = await _context.Tournaments
-            .Where(t => t.StartDate <= currentDate && t.EndDate >= currentDate)
+            .Where(t => t.StartDate <= currentDate && t.EndDate.Date >= currentDate)
             .OrderBy(t => t.StartDate)
             .Select(t => new TournamentDto
             {
