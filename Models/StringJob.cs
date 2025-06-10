@@ -24,6 +24,7 @@ public class StringJob
     
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? CompletedAt { get; set; }
+    public DateTime? DueDate { get; set; }
     
     public double MainTension { get; set; } // en kg o lb
     public double? CrossTension { get; set; } // si es diferente de MainTension

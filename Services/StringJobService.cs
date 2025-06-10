@@ -88,6 +88,7 @@ public class StringJobService : IStringJobService
                 } : null,
                 CreatedAt = sj.CreatedAt,
                 CompletedAt = sj.CompletedAt,
+                DueDate = sj.DueDate,
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
@@ -174,6 +175,7 @@ public class StringJobService : IStringJobService
                 } : null,
                 CreatedAt = sj.CreatedAt,
                 CompletedAt = sj.CompletedAt,
+                DueDate = sj.DueDate,
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
@@ -262,6 +264,7 @@ public class StringJobService : IStringJobService
                 } : null,
                 CreatedAt = sj.CreatedAt,
                 CompletedAt = sj.CompletedAt,
+                DueDate = sj.DueDate,
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
@@ -355,6 +358,7 @@ public class StringJobService : IStringJobService
                 } : null,
                 CreatedAt = sj.CreatedAt,
                 CompletedAt = sj.CompletedAt,
+                DueDate = sj.DueDate,
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
@@ -447,6 +451,7 @@ public class StringJobService : IStringJobService
                 } : null,
                 CreatedAt = sj.CreatedAt,
                 CompletedAt = sj.CompletedAt,
+                DueDate = sj.DueDate,
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
@@ -539,6 +544,7 @@ public class StringJobService : IStringJobService
                 } : null,
                 CreatedAt = sj.CreatedAt,
                 CompletedAt = sj.CompletedAt,
+                DueDate = sj.DueDate,
                 MainTension = sj.MainTension,
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
@@ -606,6 +612,7 @@ public class StringJobService : IStringJobService
             CrossTension = createDto.CrossTension,
             IsTensionInKg = createDto.IsTensionInKg,
             Logo = createDto.Logo,
+            DueDate = createDto.DueDate,
             Notes = createDto.Notes,
             Priority = createDto.Priority,
             Price = createDto.Price,
@@ -667,6 +674,7 @@ public class StringJobService : IStringJobService
         stringJob.CrossTension = updateDto.CrossTension;
         stringJob.IsTensionInKg = updateDto.IsTensionInKg;
         stringJob.Logo = updateDto.Logo;
+        stringJob.DueDate = updateDto.DueDate;
         stringJob.Status = updateDto.Status;
         stringJob.Notes = updateDto.Notes;
         stringJob.Priority = updateDto.Priority;
@@ -772,6 +780,7 @@ public class StringJobService : IStringJobService
                 CrossTension = sj.CrossTension,
                 IsTensionInKg = sj.IsTensionInKg,
                 Logo = sj.Logo,
+                DueDate = sj.DueDate,
                 Status = sj.Status,
                 Notes = sj.Notes,
                 Priority = sj.Priority,

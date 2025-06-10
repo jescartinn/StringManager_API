@@ -90,6 +90,7 @@ CREATE TABLE StringJobs (
     TournamentId INT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
     CompletedAt DATETIME NULL,
+    DueDate DATETIME NULL,
     MainTension FLOAT NOT NULL,
     CrossTension FLOAT NULL,
     IsTensionInKg BIT NOT NULL DEFAULT 1,
